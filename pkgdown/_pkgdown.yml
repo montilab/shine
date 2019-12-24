@@ -1,0 +1,71 @@
+url: https://github.com/montilab/shine
+
+development:
+  mode: auto
+
+template:
+  params:
+    bootswatch: cosmo
+
+authors:
+  Anthony Federico:
+    href: https://github.com/anfederico
+  Stefano Monti:
+    href: https://github.com/tetomonti
+
+reference:
+- title: Filtering Methods
+  desc: ~
+  contents:
+  - '`filter.var`'
+  - '`select.var`'
+- title: Estimation Methods
+  desc: ~
+  contents:
+  - '`mods.get`'
+  - '`metanet.build`'
+  - '`blanket.new`'
+  - '`blanket.add.mods`'
+  - '`blanket.add.modpairs`'
+  - '`blanket.inform`'
+  - '`prior.soften`'
+- title: Hierarchy Methods
+  desc: ~
+  contents:
+  - '`plt.hierarchy`'
+  - '`build.workflow`'
+- title: Simulation Tools
+  desc: ~
+  contents:
+  - '`sim.graph`'
+  - '`sim.graphs`'
+  - '`plt.graph`'
+  - '`plt.graphs`'
+  - '`graph.similarity`'
+- title: Data
+  desc: ~
+  contents:
+  - '`toy`'
+
+navbar:
+  title: "shine"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Examples"
+      menu:
+      - text: "Simulating Graphs"
+        href: articles/docs/simulations.html
+      - text: "Filtering Methods"
+        href: articles/docs/filtering.html
+      - text: "Structure Learning Constraints"
+        href: articles/docs/constraints.html
+      - text: "Hierarchical Networks"
+        href: articles/docs/hierarchy.html
+      - text: "Network Visualization"
+        href: articles/docs/netviz.html
+    - text: "Functionality"
+      href: reference/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/montilab/shine

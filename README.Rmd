@@ -1,0 +1,80 @@
+---
+output: rmarkdown::github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(message=FALSE, comment="#>")
+```
+
+# shine
+
+[![](https://img.shields.io/badge/platforms-linux%20%7C%20osx%20-2a89a1.svg)]()
+[![](https://img.shields.io/badge/lifecycle-stable-4ba598.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![](https://img.shields.io/github/last-commit/montilab/shine.svg)](https://github.com/montilab/shine/commits/master)
+
+Bayesian **S**tructure Learning for **Hi**erarchical **Ne**tworks  
+*A package to aid in the Bayesian estimation of hierarchical biological regulatory networks via Gaussian graphical modeling*
+
+## Documentation
+
+Please visit https://montilab.github.io/shine/ for comprehensive documentation.
+
+## Requirements
+
+To install directly from Github, R (>= 3.5.0) is required. For workflows, Nextflow can be used on any POSIX compatible system (Linux, OS X, etc) and requires BASH and Java 8 (or higher) to be installed. Alternatively, check out usage with Docker.
+
+## Installation
+
+Install the development version of the package from Github.
+
+```{r, eval=FALSE}
+devtools::install_github("montilab/shine")
+```
+
+## Basic Overview
+
+```{r, eval=FALSE}
+library(shine)
+```
+
+```{r, eval=FALSE}
+# Toy expression set object
+data(toy)
+
+# Filter out non-varying genes
+genes.filtered <- filter.var(toy, column="subtype", subtypes=c("A", "B", "C"))
+
+# Select top genes by median absolute deviation
+genes.selected <- select.var(toy, column="subtype", subtypes=c("A", "B", "C"), limit=30)
+
+# Find constraints for structure with zero-order correlations
+mods <- mods.get(toy, min.size=5, cores=3, do.plot=FALSE)
+meta <- metanet.build(mods$eigengenes, cut=0.5, mpl=TRUE, iter=20000, cores=3)
+
+# Set constraints
+blanket <- blanket.new(mods$genes)
+blanket <- blanket.add.mods(blanket, mods$mods)
+blanket <- blanket.add.modpairs(blanket, mods$mods, meta$metanet.edges)
+
+# Learn networks as a hierarchy
+hierarchy <- "
+A_B_C -> A_B
+A_B_C -> C
+A_B -> A
+A_B -> B
+"
+
+# Generate workflow
+build.workflow(hierarchy, ...)
+```
+
+```bash
+# Run workflow
+./nextflow hierarchy.nf -c hierarchy.config -profile local
+```
+
+## Network Visualization and Analysis
+
+Check out https://github.com/montilab/netviz to explore your networks.

@@ -1,0 +1,33 @@
+Package: shine
+Title: Bayesian Structure Learning for Hierarchical Networks
+Version: 1.0.0
+Authors@R: c(person(given="Anthony", family="Federico", email="anfed@bu.edu", 
+             role=c("aut", "cre"),
+             comment = c(ORCID = "0000-0002-9200-1689")),
+             person(given="Stefano", family="Monti", email="smonti@bu.edu", 
+             role=c("aut"),
+             comment = c(ORCID = "0000-0002-9376-0660")))
+Description: A package to aid in the Bayesian estimation of hierarchical biological regulatory networks via Gaussian graphical modeling.
+Depends: R (>= 3.5.0)
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    igraph,
+    BDgraph,
+    Biobase,
+    WGCNA,
+    R6,
+    flashClust,
+    dynamicTreeCut,
+    DiagrammeR,
+    stringr,
+    doParallel,
+    dplyr,
+    magrittr,
+    reticulate
+Suggests:
+    devtools,
+    testthat,
+    knitr
+RoxygenNote: 7.0.2

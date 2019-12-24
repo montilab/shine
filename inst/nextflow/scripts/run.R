@@ -23,6 +23,7 @@ write(paste("Eset:", path.to.eset), file=log, append=TRUE)
 write(paste("Genes:", path.to.genes), file=log, append=TRUE)
 write(paste("Prior:", path.to.prior), file=log, append=TRUE)
 write(paste("Blanket:", path.to.blanket), file=log, append=TRUE)
+write(paste("Iters:", iters), file=log, append=TRUE)
 write(paste("Cores:", cores), file=log, append=TRUE)
 write(paste("Condition:", condition), file=log, append=TRUE)
 write(paste("Label:", label), file=log, append=TRUE)
@@ -34,14 +35,11 @@ cat("Eset:", path.to.eset, "\n")
 cat("Genes:", path.to.genes, "\n")
 cat("Prior:", path.to.prior, "\n")
 cat("Blanket:", path.to.blanket, "\n")
+cat("Iters:", iters, "\n")
 cat("Cores:", cores, "\n")
 cat("Condition:", condition, "\n")
 cat("Label:", label, "\n")
 cat("Include:", paste(include, collapse=" "), "\n")
-
-# Parallel computation
-cores <- cores-1
-registerDoParallel(cores=cores)
 
 # Start inference
 eset.raw <- readRDS(file=path.to.eset)
@@ -49,10 +47,10 @@ genes <- readRDS(file=path.to.genes)
 
 # Subset the data
 which.genes <- rownames(eset.raw) %in% genes
-which.include <- pData(eset.raw)[,condition] %in% include 
+which.include <- Biobase::pData(eset.raw)[,condition] %in% include 
 eset.sub <- eset.raw[which.genes, which.include]
 print(dim(eset.sub))
-print(table(pData(eset.sub)[,condition]))
+print(table(Biobase::pData(eset.sub)[,condition]))
 edat <- t(Biobase::exprs(eset.sub))
 
 # Check prior and constraints
@@ -60,11 +58,11 @@ if (path.to.blanket != "/") {
     blanket <- as.matrix(readRDS(file=path.to.blanket))
     rownames(blanket) <- colnames(blanket)
 } else {
-  blanket <- NULL
+    blanket <- NULL
 }
 if (path.to.prior != "/") {
     bdg <- readRDS(file=path.to.prior)
-    prior <- plinks(bdg, round=10)
+    prior <- BDgraph::plinks(bdg, round=10)
     rownames(prior) <- colnames(prior)
 } else {
     prior <- NULL
@@ -82,13 +80,13 @@ if (!is.null(blanket) & !is.null(prior)) {
 
 cat("Estimating network...\n")
 
-bdg <- bdgraph.mpl(data=t(exprs(eset.sub)), 
-                   g.prior=g.prior, 
-                   method="ggm", 
-                   iter=iters, 
-                   print=round(iters/25), 
-                   cores=cores, 
-                   save=F)
+bdg <- BDgraph::bdgraph.mpl(data=t(Biobase::exprs(eset.sub)), 
+                            g.prior=g.prior, 
+                            method="ggm", 
+                            iter=iters, 
+                            print=round(iters/25), 
+                            cores=cores-1, 
+                            save=F)
 
 # Output graph to current directory
 saveRDS(bdg, paste(label, ".rds", sep=""))

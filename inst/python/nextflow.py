@@ -148,5 +148,5 @@ def nf_build(outdir,
                                  path_eset=path_eset,
                                  path_genes=path_genes,
                                  path_blanket=path_blanket,
-                                 iters=iters,
-                                 cores=cores) )
+                                 iters=int(iters),
+                                 cores=int(cores)) )

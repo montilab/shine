@@ -37,6 +37,8 @@ devtools::install_github("montilab/shine")
 library(shine)
 ```
 
+## Constraint-Based Structure Learning
+
 ``` r
 # Toy expression set object
 data(toy)
@@ -56,6 +58,24 @@ blanket <- blanket.new(mods$genes)
 blanket <- blanket.add.mods(blanket, mods$mods)
 blanket <- blanket.add.modpairs(blanket, mods$mods, meta$metanet.edges)
 
+# Learn network
+bdg <- bdgraph.mpl(data=t(exprs(toy)), 
+                   g.prior=blanket, 
+                   method="ggm", 
+                   iter=10000,
+                   cores=3)
+```
+
+## Hierarchical Network Workflows
+
+``` r
+# Data paths
+path.eset <- system.file("extdata/eset.rds", package="shine")
+path.genes <- system.file("extdata/genes.rds", package="shine")
+path.blanket <- system.file("extdata/blanket.rds", package="shine")
+
+condition <- "subtype"
+
 # Learn networks as a hierarchy
 hierarchy <- "
 A_B_C -> A_B
@@ -65,7 +85,13 @@ A_B -> B
 "
 
 # Generate workflow
-build.workflow(hierarchy, ...)
+build.workflow(hierarchy,
+               condition,
+               path.eset,
+               path.genes,
+               path.blanket,
+               iters=10000,
+               cores=3)
 ```
 
 ``` bash
@@ -73,6 +99,28 @@ build.workflow(hierarchy, ...)
 ./nextflow hierarchy.nf -c hierarchy.config -profile local
 ```
 
-## Network Visualization and Analysis
+``` md
+N E X T F L O W  ~  version 19.10.0
+Launching `hierarchy.nf` [hungry_banach] - revision: 75ab3c736b
+-
+P I P E L I N E ~ Configuration
+===============================
+eset      : /Library/Frameworks/R.framework/Versions/3.6/Resources/library/shine/extdata/eset.rds
+genes     : /Library/Frameworks/R.framework/Versions/3.6/Resources/library/shine/extdata/genes.rds
+blanket   : /Library/Frameworks/R.framework/Versions/3.6/Resources/library/shine/extdata/blanket.rds
+outdir    : .
+iters     : 10000
+cores     : 3
+condition : subtype
+-
+executor >  local (1)
+[6b/7f48ed] process > A_B_C [100%] 1 of 1 ✔
+[ac/399ae9] process > C     [100%] 1 of 1 ✔
+[4a/e8822e] process > A_B   [100%] 1 of 1 ✔
+[3e/eec27b] process > A     [100%] 1 of 1 ✔
+[6f/3e0a36] process > B     [100%] 1 of 1 ✔
+```
+
+## Network Visualization
 
 Check out <https://github.com/montilab/netviz> to explore your networks.

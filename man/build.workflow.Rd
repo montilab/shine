@@ -7,11 +7,10 @@
 build.workflow(
   hierarchy,
   condition,
-  path.eset,
-  path.genes,
-  path.blanket = NULL,
+  eset,
+  blanket = NULL,
   outdir = ".",
-  iters = 5000,
+  iter = 5000,
   cores = 1
 )
 }
@@ -20,15 +19,13 @@ build.workflow(
 
 \item{condition}{The column in pData where subtypes are described}
 
-\item{path.eset}{A full path to an expression set object saved as an rds file}
+\item{eset}{An expression set object}
 
-\item{path.genes}{A full path to a character vector of genes saved as an rds file}
-
-\item{path.blanket}{A full path to a gene x gene constraint matrix saved as an rds file}
+\item{blanket}{A gene x gene constraint matrix}
 
 \item{outdir}{A directory where the workflow will be generated}
 
-\item{iters}{The number of iterations for the sampling algorithm}
+\item{iter}{The number of iterations for the sampling algorithm}
 
 \item{cores}{The number of cores for each network to use for parallel execution}
 }

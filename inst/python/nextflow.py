@@ -13,39 +13,32 @@ profiles {{
 }}
 
 params {{
-  path.eset = "{path_eset}"
-  path.genes = "{path_genes}"
-  path.blanket = "{path_blanket}"
-  outdir = "."
-  iters = "{iters}"
-  cores = "{cores}"
-  condition = "{condition}"
+  data = "$baseDir/data/data.rds"
+  output = "$baseDir"
   email = ""
 }}
 '''.format(**kwrgs))
 
-def nf_head():
+def nf_head(**kwrgs):
     return('''\
 #!/usr/bin/env nextflow
 
 log.info """\
 -
-P I P E L I N E ~ Configuration
+W O R K F L O W ~ Configuration
 ===============================
-eset      : ${params.path.eset}
-genes     : ${params.path.genes}
-blanket   : ${params.path.blanket}
-outdir    : ${params.outdir}
-iters     : ${params.iters}
-cores     : ${params.cores}
-condition : ${params.condition}
+data      : ${{params.data}}
+output    : ${{params.output}}
+-------------------------------
+Hierarchy
+{hierarchy}
 -
 """
 
-eset = file(params.path.eset)
-genes = file(params.path.genes)
-blanket = file(params.path.blanket)
-''')
+data = file(params.data)
+run = file("$baseDir/scripts/run.R")
+
+'''.format(**kwrgs))
 
 def nf_tail():
     return('''
@@ -66,20 +59,19 @@ workflow.onComplete {
 }
 ''')
 
-def nf_process(label, include, blanket=False, prior=False):
+def nf_process(label, include, prior=False):
     process = """
 process {0} {{
     cache "deep"
-    publishDir "$params.outdir/networks", pattern: "*.rds", mode: "copy"
-    publishDir "$params.outdir/logs", pattern: "*.log", mode: "copy"
+    publishDir "$params.output/networks", pattern: "*.rds", mode: "copy"
+    publishDir "$params.output/logs", pattern: "*.log", mode: "copy"
 
     input:
-    file eset
-    file genes
+    file data
+    file run
     val include from "{1}"
     val label from "{0}"
     {2}
-    {3}
 
     output:
     file '*.rds' into {0}_rds
@@ -89,17 +81,15 @@ process {0} {{
     template 'run.sh'
 }}
 """
-    if blanket: blanket = 'file blanket'
-    else:       blanket = 'val blanket from "/"'
 
     if prior: prior = 'file prior from {0}_rds'.format(prior)
     else:     prior = 'val prior from "{0}"'.format("/")
 
-    return( process.format(label, include, blanket, prior) )
+    return( process.format(label, include, prior) )
 
-def nf_workflow(hierarchy, blanket):
+def nf_workflow(hierarchy):
 
-    workflow = [nf_head()]
+    workflow = [nf_head(hierarchy=hierarchy)]
 
     leaves = {}
     for i in hierarchy.split('\n'):
@@ -110,7 +100,7 @@ def nf_workflow(hierarchy, blanket):
         if '->' not in i:
             label = i.strip(' ')
             include = split_label(label)
-            workflow.append( nf_process(label, include, blanket) )
+            workflow.append( nf_process(label, include) )
             continue
 
         # Networks in a hierarchy
@@ -121,13 +111,13 @@ def nf_workflow(hierarchy, blanket):
     tree = set([i for i in leaves.values() if i not in leaves.keys()])
     for label in tree:
         include = split_label(label)
-        workflow.append( nf_process(label, include, blanket) )
+        workflow.append( nf_process(label, include) )
 
     while len(leaves) > 0:
         for child, parent in leaves.items():
             if parent in tree:
                 include = split_label(child)
-                workflow.append( nf_process(child, include, blanket, parent) )
+                workflow.append( nf_process(child, include, parent) )
                 tree.add(child)
         
         for i in tree: 
@@ -138,31 +128,11 @@ def nf_workflow(hierarchy, blanket):
     
     return(workflow)
 
-def nf_build(outdir,
-             hierarchy,
-             condition,
-             path_eset,
-             path_genes,
-             path_blanket,
-             iters,
-             cores):
+def nf_build(hierarchy, data, outdir):
 
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
-    if path_blanket == "/":
-        blanket = False
-    else:
-        blanket = True
-
-    with open(os.path.join(outdir, "hierarchy.nf"), "w") as outfile:
-        for i in nf_workflow(hierarchy, blanket):
+    with open(os.path.join(outdir, "workflow.nf"), "w") as outfile:
+        for i in nf_workflow(hierarchy):
             outfile.write(i)
 
-    with open(os.path.join(outdir, "hierarchy.config"), "w") as outfile:
-        outfile.write( nf_config(condition=condition,
-                                 path_eset=path_eset,
-                                 path_genes=path_genes,
-                                 path_blanket=path_blanket,
-                                 iters=int(iters),
-                                 cores=int(cores)) )
+    with open(os.path.join(outdir, "workflow.config"), "w") as outfile:
+        outfile.write(nf_config())

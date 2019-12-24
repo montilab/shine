@@ -60,7 +60,10 @@ blanket <- blanket.add.mods(blanket, mods$mods)
 blanket <- blanket.add.modpairs(blanket, mods$mods, meta$metanet.edges)
 
 # Learn network
-bdg <- bdgraph.mpl(data=t(exprs(toy)), g.prior=blanket, method="ggm", cores=3)
+bdg <- BDgraph::bdgraph.mpl(data=t(Biobase::exprs(toy)), 
+                            g.prior=blanket, 
+                            method="ggm", 
+                            cores=3)
 ```
 
 ## Hierarchical Network Workflows

@@ -1,6 +1,9 @@
 #!/bin/sh
 
-Rscript $PWD/scripts/run.R \\
+SCRIPT="cat(system.file('scripts/run.R', package='shine'))";
+RUN=\$(Rscript -e "\$SCRIPT");
+
+Rscript \$RUN \\
 "${params.path.eset}" \\
 "${params.path.genes}" \\
 "${prior}" \\

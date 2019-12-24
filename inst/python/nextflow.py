@@ -7,6 +7,7 @@ def nf_config(**kwrgs):
     return('''\
 profiles {{
   local {{includeConfig 'configs/local.config'}}
+  docker {{includeConfig 'configs/docker.config'}}
   sge {{includeConfig 'configs/sge.config'}}
   aws {{includeConfig 'configs/aws.config'}}
 }}
@@ -40,6 +41,10 @@ cores     : ${params.cores}
 condition : ${params.condition}
 -
 """
+
+eset = file(params.path.eset)
+genes = file(params.path.genes)
+blanket = file(params.path.blanket)
 ''')
 
 def nf_tail():
@@ -61,7 +66,7 @@ workflow.onComplete {
 }
 ''')
 
-def nf_process(label, include, prior=False):
+def nf_process(label, include, blanket=False, prior=False):
     process = """
 process {0} {{
     cache "deep"
@@ -69,9 +74,12 @@ process {0} {{
     publishDir "$params.outdir/logs", pattern: "*.log", mode: "copy"
 
     input:
+    file eset
+    file genes
     val include from "{1}"
     val label from "{0}"
     {2}
+    {3}
 
     output:
     file '*.rds' into {0}_rds
@@ -81,12 +89,15 @@ process {0} {{
     template 'run.sh'
 }}
 """
+    if blanket: blanket = 'file blanket'
+    else:       blanket = 'val blanket from "/"'
+
     if prior: prior = 'file prior from {0}_rds'.format(prior)
     else:     prior = 'val prior from "{0}"'.format("/")
 
-    return( process.format(label, include, prior) )
+    return( process.format(label, include, blanket, prior) )
 
-def nf_workflow(hierarchy):
+def nf_workflow(hierarchy, blanket):
 
     workflow = [nf_head()]
 
@@ -99,7 +110,7 @@ def nf_workflow(hierarchy):
         if '->' not in i:
             label = i.strip(' ')
             include = split_label(label)
-            workflow.append( nf_process(label, include) )
+            workflow.append( nf_process(label, include, blanket) )
             continue
 
         # Networks in a hierarchy
@@ -110,13 +121,13 @@ def nf_workflow(hierarchy):
     tree = set([i for i in leaves.values() if i not in leaves.keys()])
     for label in tree:
         include = split_label(label)
-        workflow.append( nf_process(label, include) )
+        workflow.append( nf_process(label, include, blanket) )
 
     while len(leaves) > 0:
         for child, parent in leaves.items():
             if parent in tree:
                 include = split_label(child)
-                workflow.append( nf_process(child, include, parent) )
+                workflow.append( nf_process(child, include, blanket, parent) )
                 tree.add(child)
         
         for i in tree: 
@@ -139,8 +150,13 @@ def nf_build(outdir,
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    if path_blanket == "/":
+        blanket = False
+    else:
+        blanket = True
+
     with open(os.path.join(outdir, "hierarchy.nf"), "w") as outfile:
-        for i in nf_workflow(hierarchy):
+        for i in nf_workflow(hierarchy, blanket):
             outfile.write(i)
 
     with open(os.path.join(outdir, "hierarchy.config"), "w") as outfile:

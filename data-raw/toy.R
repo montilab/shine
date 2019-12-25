@@ -4,7 +4,7 @@ library(usethis)
 
 # Simulate Scale-Free Graph
 set.seed(1)
-graph <- sim.graph(100)
+graph <- sim.graph(150)
 
 # Simulate Expression Data
 set.seed(1)

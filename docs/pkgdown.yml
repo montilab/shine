@@ -1,0 +1,12 @@
+pandoc: 2.7.3
+pkgdown: 1.4.1
+pkgdown_sha: ~
+articles:
+  constraints: docs/constraints.html
+  filtering: docs/filtering.html
+  hierarchy: docs/hierarchy.html
+  simulations: docs/simulations.html
+urls:
+  reference: https://github.com/montilab/shine/reference
+  article: https://github.com/montilab/shine/articles
+

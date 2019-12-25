@@ -18,10 +18,10 @@ documentation.
 
 ## Requirements
 
-To install directly from Github, R (\>= 3.5.0) is required. For
-workflows, Nextflow can be used on any POSIX compatible system (Linux,
-OS X, etc) and requires BASH and Java 8 (or higher) to be installed.
-Alternatively, check out usage with Docker.
+We suggest R 3.6.0 but R (\>= 3.5.0) is required to install directly
+from Github. For workflows, Nextflow can be used on any POSIX compatible
+system (Linux, OS X, etc) and requires BASH and Java 8 (or higher) to be
+installed. Alternatively, check out usage with Docker.
 
 ## Installation
 
@@ -37,43 +37,57 @@ devtools::install_github("montilab/shine")
 library(shine)
 ```
 
-## Constraint-Based Structure Learning
+### Example Data
 
 ``` r
 # Toy expression set object
 data(toy)
+```
 
+``` r
+dim(toy)
+```
+
+    #> Features  Samples 
+    #>      150       30
+
+``` r
+table(toy$subtype)
+```
+
+    #> 
+    #>  A  B  C 
+    #> 10 10 10
+
+### Variable Selection
+
+``` r
 # Filter out non-varying genes
 genes.filtered <- filter.var(toy, column="subtype", subtypes=c("A", "B", "C"))
 
 # Select top genes by median absolute deviation
-genes.selected <- select.var(toy, column="subtype", subtypes=c("A", "B", "C"), limit=30)
+genes.selected <- select.var(toy, column="subtype", subtypes=c("A", "B", "C"), genes=genes.filtered, limit=150)
 
+# Subset toy dataset
+eset <- toy[genes.selected,]
+```
+
+### Structural Constraints
+
+``` r
 # Find constraints for structure with zero-order correlations
-mods <- mods.get(toy, min.size=5, cores=3, do.plot=FALSE)
+mods <- mods.get(eset, min.size=5, cores=3, do.plot=FALSE)
 meta <- metanet.build(mods$eigengenes, cut=0.5, mpl=TRUE, iter=20000, cores=3)
 
 # Set constraints
 blanket <- blanket.new(mods$genes)
 blanket <- blanket.add.mods(blanket, mods$mods)
 blanket <- blanket.add.modpairs(blanket, mods$mods, meta$metanet.edges)
-
-# Learn network
-bdg <- bdgraph.mpl(data=t(exprs(toy)), 
-                   g.prior=blanket, 
-                   method="ggm", 
-                   iter=10000,
-                   cores=3)
 ```
 
-## Hierarchical Network Workflows
+### Hierarchical Network Workflows
 
 ``` r
-# Data paths
-path.eset <- system.file("extdata/eset.rds", package="shine")
-path.genes <- system.file("extdata/genes.rds", package="shine")
-path.blanket <- system.file("extdata/blanket.rds", package="shine")
-
 condition <- "subtype"
 
 # Learn networks as a hierarchy
@@ -87,40 +101,47 @@ A_B -> B
 # Generate workflow
 build.workflow(hierarchy,
                condition,
-               path.eset,
-               path.genes,
-               path.blanket,
-               iters=10000,
+               eset,
+               blanket,
+               iter=10000,
                cores=3)
 ```
 
 ``` bash
-# Run workflow
-./nextflow hierarchy.nf -c hierarchy.config -profile local
+./nextflow workflow.nf -c workflow.config -profile local
 ```
 
 ``` md
 N E X T F L O W  ~  version 19.10.0
-Launching `hierarchy.nf` [hungry_banach] - revision: 75ab3c736b
+Launching `workflow.nf` [mad_northcutt] - revision: e7aff2bf48
 -
-P I P E L I N E ~ Configuration
+W O R K F L O W ~ Configuration
 ===============================
-eset      : /Library/Frameworks/R.framework/Versions/3.6/Resources/library/shine/extdata/eset.rds
-genes     : /Library/Frameworks/R.framework/Versions/3.6/Resources/library/shine/extdata/genes.rds
-blanket   : /Library/Frameworks/R.framework/Versions/3.6/Resources/library/shine/extdata/blanket.rds
-outdir    : .
-iters     : 10000
-cores     : 3
-condition : subtype
+data      : /Users/anthonyfederico/Downloads/nextflow/data/data.rds
+output    : /Users/anthonyfederico/Downloads/nextflow
+-------------------------------
+
+Hierarchy
+A_B_C -> A_B
+A_B_C -> C
+A_B -> A
+A_B -> B
+
 -
-executor >  local (1)
-[6b/7f48ed] process > A_B_C [100%] 1 of 1 ✔
-[ac/399ae9] process > C     [100%] 1 of 1 ✔
-[4a/e8822e] process > A_B   [100%] 1 of 1 ✔
-[3e/eec27b] process > A     [100%] 1 of 1 ✔
-[6f/3e0a36] process > B     [100%] 1 of 1 ✔
+
+executor >  local (5)
+[4d/715ff1] process > A_B_C [100%] 1 of 1 ✔
+[87/c2d03b] process > C     [100%] 1 of 1 ✔
+[6b/544fdd] process > A_B   [100%] 1 of 1 ✔
+[96/916564] process > A     [100%] 1 of 1 ✔
+[43/c599d4] process > B     [100%] 1 of 1 ✔
+
+Completed at: 24-Dec-2019 23:01:05
+Duration    : 1m 45s
+CPU hours   : 0.1
+Succeeded   : 5
 ```
 
-## Network Visualization
+### Network Visualization
 
 Check out <https://github.com/montilab/netviz> to explore your networks.

@@ -64,6 +64,7 @@ cat(paste("\nSamples:"))
 print(table(Biobase::pData(eset.sub)[,condition]))
 
 cat(paste("\nEstimate\n"))
+
 # Estimate
 bdg <- BDgraph::bdgraph.mpl(data=t(Biobase::exprs(eset.sub)), 
                             g.prior=g.prior, 

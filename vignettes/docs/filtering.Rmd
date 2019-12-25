@@ -1,0 +1,84 @@
+---
+title: "Filtering Methods"
+vignette: >
+  %\VignetteIndexEntry{Filtering Methods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(comment="", cache=FALSE, fig.align="center")
+library(reactable)
+library(magrittr)
+devtools::load_all(".")
+```
+
+There is always a limit to the number of variables that can be used in high-dimensional graphical modeling. This is typically determined by the number of samples available as well as the methodology. Therefore, we typically need to filter out genes due some failure to meet a requirement or select genes based on favorable property. We provide some useful functions for variable filtering and selection that take consider multiple networks.
+
+```{r, eval=FALSE}
+library(shine)
+```
+
+We use a toy expression set object with three subtypes to illustrate...
+
+```{r}
+data(toy)
+```
+
+```{r}
+dim(toy)
+head(pData(toy))
+table(toy$subtype)
+exprs(toy)[1:5,1:5]
+```
+
+# Variation Filtering
+
+Graphical modeling considers the co-variance of variables across samples. Therefore, variables must have non-zero variance to be useful. Additionally, when learning multiple networks, the same variable must have non-zero variance within each subtype. Here is a function used to find variables with non-zero variance within every subtype.
+
+```{r}
+head(rownames(toy))
+
+# Edit in zero variance in at least one subtype
+exprs(toy)["G2", toy$subtype == "A"] <- 0
+
+genes.filtered <- filter.var(toy, 
+                             column="subtype", 
+                             subtypes=c("A", "B", "C"), 
+                             fn=var)
+
+head(genes.filtered)
+```
+
+# Variable Selection
+
+Even after filtering, there still may be too many variables. One method to reduce the number of variables is to rank them by some favorable property and select the top *x* amount. When finding structural constraints, we rely on biweight midcorrelation which is more reliable when variables have a high median absolute deviation. Since there are multiple networks, we give each network an opportunity to contribute a high-ranking variable in a turn-based system until the limit has been reached.
+
+```{r}
+genes.selected <- select.var(toy, 
+                             column="subtype",
+                             subtypes=c("A", "B", "C"), 
+                             limit=30, 
+                             genes=genes.filtered, 
+                             fn=mad)
+
+head(genes.selected)
+```
+
+```{r, include=FALSE}
+rankings <- mapply(function(x) {
+   rank <- sort(apply(exprs(toy)[,toy$subtype == x], 1, mad), decreasing=TRUE)
+   match(genes.selected, names(rank))
+}, unique(toy$subtype), SIMPLIFY = FALSE) %>%
+as.data.frame() %>%
+set_rownames(genes.selected)
+```
+
+```{r}
+reactable(rankings,
+          compact=TRUE, 
+          fullWidth=TRUE,
+          defaultPageSize=30,
+          striped=TRUE,
+          showPageSizeOptions=FALSE)
+```

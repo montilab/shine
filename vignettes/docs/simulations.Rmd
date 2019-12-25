@@ -1,0 +1,55 @@
+---
+title: "Network Simulation"
+vignette: >
+  %\VignetteIndexEntry{Network Simulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(comment="", cache=FALSE, fig.align="center")
+devtools::load_all(".")
+```
+
+# A Single Network
+
+When learning networks, it may be useful to test your algorithm on simulated data. To help with this, we provide some useful functions for simulating scale-free graphs using the [Barabási–Albert model](https://en.wikipedia.org/wiki/Barab%C3%A1si%E2%80%93Albert_model).
+
+The Barabási–Albert model is an algorithm for generating random scale-free networks using a preferential attachment mechanism. It incorporates two important general concepts: growth and preferential attachment. Both growth and preferential attachment exist widely in real networks. 
+
+- Growth means that the number of nodes in the network increases over time.  
+- Preferential attachment means that the more connected a node is, the more likely it is to receive new links.  
+
+```{r, eval=FALSE}
+library(shine)
+```
+
+```{r}
+g <- sim.graph(p=100)
+```
+
+```{r}
+plt.graph(g)
+```
+
+# Multiple Networks
+
+When estimating networks in a hierarchy, one assumes networks share some structural features. To generate multiple scale-free networks that share features with a known similarity, we can modify the Barabási–Albert algorithm with the following steps:
+
+- Seed the algorithm with a relatively small graph  
+- For multiple networks, run the algorithm independently multiple times, each diverging from the seed. Due to the preferential attachment mechanism, hub nodes in one network will remain hubs in another, potentially with different targets.  
+- Calculate the mean pairwise overlap similarity of edges between networks.  
+
+To do this, we choose a final graph size and the number of networks to generate. The algorithm will start with seed graphs of decreasing size. The smaller the seed graph, the more divergent the resulting networks will be, resulting in a lower similarity.
+
+```{r, fig.width=12, fig.height=4}
+simulations <- sim.graphs(n=3, p.graphs=100, p.start=50, p.step=-10)
+
+for (s in simulations) {
+    ig1 <- s$graphs[[1]]
+    ig2 <- s$graphs[[2]]
+    ig3 <- s$graphs[[3]]
+    plt.graphs(ig1, ig2, ig3)
+    title(main=paste("Similarity Measure: ", signif(s$similarity, 2)))
+}
+```

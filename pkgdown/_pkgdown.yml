@@ -28,7 +28,6 @@ reference:
   - '`blanket.add.mods`'
   - '`blanket.add.modpairs`'
   - '`blanket.inform`'
-  - '`prior.soften`'
 - title: Hierarchy Methods
   desc: ~
   contents:

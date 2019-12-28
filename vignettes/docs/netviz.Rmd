@@ -1,0 +1,31 @@
+---
+title: "Network Visualization"
+vignette: >
+  %\VignetteIndexEntry{Network Visualization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(comment="")
+```
+
+# Upload
+
+Networks are saved as `bdgraph` objects which contain a matrix of posterior edge probabilities as well as the last sampled graph. We can import these networks for analysis directly into [Netviz](https://github.com/montilab/netviz) by saving each network as a separate object in a list  and using the `bdgraph` upload option.
+
+```{r, eval=FALSE}
+toy <- list("A" = readRDS("A.rds"),
+            "B" = readRDS("B.rds"),
+            "C" = readRDS("C.rds"))
+
+saveRDS(toy, "toy.rds")
+```
+
+<img src="../../media/Netviz-Upload.png" width="1000" height="540">
+
+# Explore
+
+Netviz provides an easy-to-use interface to validate, discover, explore, and compare one or more networks... 
+
+<img src="../../media/Netviz-Explore.png" width="1000" height="540">

@@ -4,7 +4,9 @@
 # shine
 
 [![](https://img.shields.io/badge/platforms-linux%20%7C%20osx%20-2a89a1.svg)]()
-[![](https://img.shields.io/badge/lifecycle-stable-4ba598.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![Built
+With](https://img.shields.io/badge/Built%20With-Nextflow-brightgreen.svg)](https://www.nextflow.io/)
 [![](https://img.shields.io/github/last-commit/montilab/shine.svg)](https://github.com/montilab/shine/commits/master)
 
 Bayesian **S**tructure Learning for **Hi**erarchical **Ne**tworks  
@@ -19,9 +21,12 @@ documentation.
 ## Requirements
 
 We suggest R 3.6.0 but R (\>= 3.5.0) is required to install directly
-from Github. For workflows, Nextflow can be used on any POSIX compatible
-system (Linux, OS X, etc) and requires BASH and Java 8 (or higher) to be
-installed. Alternatively, check out usage with Docker.
+from Github. For workflows, you will need Python (\>= 2.7.0) and
+dependencies for [Nextflow](https://www.nextflow.io/).
+
+Nextflow can be used on any POSIX compatible system (Linux, OS X, etc)
+and requires BASH and Java 8 (or higher) to be installed. Alternatively,
+check out usage with Docker.
 
 ## Installation
 

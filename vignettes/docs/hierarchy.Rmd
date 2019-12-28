@@ -17,6 +17,28 @@ We provide a function for generating [Nextflow](https://www.nextflow.io/) workfl
 
 This is the last step in learning networks. At this point, you should have identified a network hierarchy, employed a gene selection method, and optionally learned structural constraints for your networks.
 
+# Requirements for Nextflow
+
+Make sure your Java installation is version 8 or higher...
+```bash
+java -version
+```
+
+Create a new directory and install/test Nextflow...
+```bash
+mkdir nf-test
+cd nf-test
+curl -s https://get.nextflow.io | bash
+./nextflow run hello
+```
+
+Alternatively, you can install [Docker](https://docs.docker.com/install/) and pull our [Dockerfile](https://github.com/montilab/shine/packages)...
+
+```
+docker run hello-world
+docker pull docker.pkg.github.com/montilab/shine/workflow:latest
+```
+
 # Terminology
 
 `hierarchy` - A string describing the hierarchy in dot language notation  
@@ -218,10 +240,8 @@ process C {
 ```
 
 **Run with Docker Container**  
-First install [Docker](https://docs.docker.com/install/)...  
 
 ```bash
-docker pull docker.pkg.github.com/montilab/shine/IMAGE_NAME:TAG_NAME
 ./nextflow workflow.nf -c workflow.config -with-docker montilab/shine
 ```
 
@@ -231,6 +251,9 @@ docker pull docker.pkg.github.com/montilab/shine/IMAGE_NAME:TAG_NAME
 ```
 
 ### Output
+
+A successful run should look similar...
+
 ```md
 N E X T F L O W  ~  version 19.10.0
 Launching `workflow.nf` [mad_northcutt] - revision: e7aff2bf48
@@ -249,7 +272,7 @@ A_B -> B
 
 -
 
-executor >  local (1)
+executor >  local (5)
 [4d/715ff1] process > A_B_C [100%] 1 of 1 ✔
 [87/c2d03b] process > C     [100%] 1 of 1 ✔
 [6b/544fdd] process > A_B   [100%] 1 of 1 ✔
@@ -261,3 +284,55 @@ Duration    : 1m 45s
 CPU hours   : 0.1
 Succeeded   : 5
 ```
+
+By default, the networks will be saved individually as `.rds` files within a directory called *networks*...
+
+```md
+/nextflow
+├── /networks
+│   ├── A_B_C.rds
+│   ├── A_B.rds
+│   ├── A.rds
+|   ├── B.rds
+|   └── C.rds
+|
+└── /logs
+```
+
+Each network is associated with a log file, which records the parameters and progress of the estimation...
+
+```md
+Parameters
+Label: A_B
+Data: data.rds
+Prior: A_B_C.rds
+Condition: subtype
+Include: A, B
+Iter: 10000
+Cores: 3
+
+Data: Features  Samples 
+      150       20 
+
+Samples: A  B 
+         10 10 
+
+Estimate
+ Iteration  1                 
+ Iteration  406                 
+ Iteration  811                 
+ Iteration  1201                 
+ Iteration  1606                 
+ Iteration  2011                 
+ Iteration  2401                 
+ Iteration  2806                 
+ Iteration  3211                 
+ Iteration  3601                 
+ Iteration  4006                 
+ Iteration  4411                 
+ Iteration  4801                 
+ Iteration  5206                 
+ ...
+```
+
+Networks are saved as `bdgraph` objects which contain a matrix of posterior edge probabilities as well as the last sampled graph. We can import these networks for analysis directly into [Netviz](https://github.com/montilab/netviz). See the [next section](https://montilab.github.io/shine/articles/docs/netviz.html) for more details.

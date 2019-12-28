@@ -198,17 +198,3 @@ blanket.inform <- function(blanket, prior) {
     blanket.informed[blanket.where.not.zero] <- prior[blanket.where.not.zero]
     return(blanket.informed)
 }
-
-#' Removes absolute values in posterior before being used as a prior
-#' 
-#' @param prior A matrix of probabilities
-#' @return A matrix of probabilities
-#' 
-#' @export
-prior.soften <- function(prior) {
-    max.val <- max(prior)
-    min.val <- min(prior)
-    prior[prior == 1] <- max.val
-    prior[prior == 0] <- min.val
-    return(prior)
-}

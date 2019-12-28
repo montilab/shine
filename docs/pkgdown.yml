@@ -5,6 +5,7 @@ articles:
   constraints: docs/constraints.html
   filtering: docs/filtering.html
   hierarchy: docs/hierarchy.html
+  netviz: docs/netviz.html
   simulations: docs/simulations.html
 urls:
   reference: https://github.com/montilab/shine/reference

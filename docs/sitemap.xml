@@ -46,9 +46,6 @@
     <loc>https://github.com/montilab/shine/reference/plt.soft.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/prior.soften.html</loc>
-  </url>
-  <url>
     <loc>https://github.com/montilab/shine/reference/pvector.html</loc>
   </url>
   <url>
@@ -74,6 +71,9 @@
   </url>
   <url>
     <loc>https://github.com/montilab/shine/articles/docs/hierarchy.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/articles/docs/netviz.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/articles/docs/simulations.html</loc>

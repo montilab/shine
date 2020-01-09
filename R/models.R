@@ -1,17 +1,19 @@
-#' Repeatable vector of distinct colors
+#' Get a string-representation of igraph edges
+#' 
+#' @param ig An igraph object
+#' @param rev Use true to return reversed edges
+#' @return A character vector of edges
+#' 
+#' @importFrom igraph as_data_frame
+#' @importFrom dplyr mutate %>%
 #' 
 #' @keywords internal
-rcolors <- function(reps=1) {
-    rep(c("#BDBE4D","#E8EE77","#CA874D","#945DCF","#76DDEC",
-          "#5BDE78","#D6A0E8","#CCADB5","#719DEB","#819F9E",
-          "#8671B3","#E6ECDC","#68C495","#EBEAB7","#DDEC3C",
-          "#6AA03A","#D782E9","#E29B91","#ECBD42","#E294B6",
-          "#E176C6","#EFD7E8","#6D79E5","#AF9D7A","#97E088",
-          "#6C9A61","#56EB4D","#61F0BA","#B750E5","#9DB6E3",
-          "#7037E4","#6FEDD7","#785867","#D0B6E2","#E438E9",
-          "#DCC27C","#E05E38","#A5E753","#56B7E4","#D7EA97",
-          "#C0D0E0","#B7E7DE","#6283A0","#EAC5A8","#D73D7B",
-          "#61BDBB","#CE636D","#E34CC6","#B4EDBF","#ABC298"), reps)
+model.edges <- function(ig, rev=FALSE) {
+    df <- igraph::as_data_frame(ig, what="edges") %>%
+          dplyr::mutate(fwd=paste(from, to, sep="-")) %>%
+          dplyr::mutate(rev=paste(to, from, sep="-"))
+    
+    if (rev) c(df$fwd, df$rev) else df$fwd
 }
 
 #' Rename igraph vertices as characters
@@ -22,6 +24,49 @@ model.rename <- function(ig, prefix="G") {
     igraph::V(ig)$name <- ids
     igraph::V(ig)$label <- ids
     return(ig)
+}
+
+#' Szymkiewicz–Simpson coefficient of edges
+#' 
+#' @param ig1 An igraph object
+#' @param ig2 An igraph object
+#' @return An edge similarity
+#' 
+#' @importFrom igraph graph_from_adjacency_matrix intersection ecount
+#' @importFrom dplyr %>%
+#' 
+#' @export
+model.similarity <- function(ig1, ig2) {
+    if (is(ig1, "matrix")) ig1 <- igraph::graph_from_adjacency_matrix(ig1, mode="undirected", diag=FALSE)
+    if (is(ig2, "matrix")) ig2 <- igraph::graph_from_adjacency_matrix(ig2, mode="undirected", diag=FALSE)
+    
+    igraph::intersection(ig1, ig2, byname=FALSE) %>%
+    igraph::ecount() %>%
+    ( function(x) x / min(ecount(ig1), ecount(ig2)) )
+}
+
+#' Edge similarity of two or more graphs
+#' 
+#' @param igs A list of igraph objects
+#' @return An edge similarity
+#' 
+#' @importFrom dplyr %>%
+#' 
+#' @export
+models.similarity <- function(igs) {
+    combn(igs, 2, function(x) {
+        model.similarity(x[[1]], x[[2]])
+    }) %>%
+    mean()
+}
+
+#' Rename igraph vertices as characters
+#' 
+#' @export
+model.hpa <- function(n, p, seed, ...) {
+    lapply(seq(n), function(x) {
+        igraph::sample_pa(n=p, directed=FALSE, start.graph=seed, ...)
+    })
 }
 
 #' Simulate network via modular preferential attachment model
@@ -71,7 +116,6 @@ model.mpa <- function(p=300, m=6, q.hub=0.95, m.links=6, power=1.7, z.appeal=1, 
     e$color <- "red"
     
     g <- g + e
-    g <- model.rename(g)
     return(g)   
 }
 
@@ -83,8 +127,7 @@ model.mer <- function(p=300, m=6, m.prob=0.07, n.inter=1, ...) {
                            islands.size=p/m,
                            islands.pin=m.prob,
                            n.inter=n.inter,
-                           ...) %>%
-    model.rename()
+                           ...)
 }
 
 #' Simulate network via preferential attachment model
@@ -95,8 +138,7 @@ model.pa <- function(p=300, power=1, z.appeal=1, ...) {
                       power=power,
                       zero.appeal=z.appeal,
                       directed=FALSE, 
-                      ...) %>%
-    model.rename()
+                      ...)
 }
 
 #' Simulate network via small world model
@@ -107,8 +149,7 @@ model.sw <- function(p=300, dim=1, nei=3, rw.prob=0.05, ...) {
                               dim=dim,
                               nei=nei,
                               p=rw.prob,
-                              ...) %>%
-    model.rename()
+                              ...)
 }
 
 #' Simulate network via forest fire model
@@ -119,8 +160,7 @@ model.ff <- function(p=300, fw.prob=0.3, bw.factor=0.5, ...) {
                               fw.prob=fw.prob, 
                               bw.factor=bw.factor,
                               directed=FALSE, 
-                              ...) %>%
-    model.rename()
+                              ...)
 }
 
 #' Simulate network via erdos-renyi model
@@ -150,9 +190,27 @@ model.plot <- function(ig, seed=1, colors=FALSE) {
     else {
         plot(ig, 
             vertex.size=4, 
-            vertex.color="orange",
+            vertex.color="grey",
             edge.color="black", 
             vertex.label=NA)
+    }
+}
+
+#' Plot one or more models highlighting differences
+#' 
+#' @param igs A list of igraph objects
+#' @return A graph visualization
+#' 
+#' @export
+models.plot <- function(igs) {
+    edges <- lapply(igs, function(x) model.edges(x, rev=TRUE))
+    shared <- Reduce(intersect, edges)
+    par(mfrow=c(1,length(igs)))
+    for (ig in igs) {
+        igraph::E(ig)$width <- 2
+        igraph::E(ig)$color <- "#FC4840" # blue
+        igraph::E(ig)$color[model.edges(ig) %in% shared] <- "#113D5C" # red
+        plot(ig, vertex.size=4, vertex.color="grey", vertex.label=NA)
     }
 }
 
@@ -195,114 +253,4 @@ model.sim <- function(n, ig, seed=1) {
     colnames(eset) <- paste("S", colnames(eset), sep="")
     rownames(eset) <- colnames(adj)
     return(list(bdg=bdg, eset=eset))
-}
-
-#' Get a string-representation of igraph edges
-#' 
-#' @param ig An igraph object
-#' @param rev Use true to return reversed edges
-#' @return A character vector of edges
-#' 
-#' @importFrom igraph as_data_frame
-#' @importFrom dplyr mutate %>%
-#' 
-#' @keywords internal
-string.edges <- function(ig, rev=FALSE) {
-    df <- igraph::as_data_frame(ig, what="edges") %>%
-          dplyr::mutate(fwd=paste(from, to, sep="-")) %>%
-          dplyr::mutate(rev=paste(to, from, sep="-"))
-    
-    if (rev) c(df$fwd, df$rev) else df$fwd
-}
-
-#' Plot multiple igraph objects
-#' 
-#' @param ... One or more igraph objects
-#' @return A graph visualization
-#' 
-#' @importFrom igraph E
-#' 
-#' @export
-plt.graphs <- function(...) {
-    graphs <- list(...)
-    edges <- lapply(graphs, function(x) string.edges(x, rev=TRUE))
-    shared <- Reduce(intersect, edges)
-    par(mfrow=c(1,length(graphs)))
-    for (ig in graphs) {
-        igraph::E(ig)$width <- 2
-        igraph::E(ig)$color <- "#FC4840"
-        igraph::E(ig)$color[string.edges(ig) %in% shared] <- "#113D5C"      
-        plt.graph(ig)
-    }
-}
-
-#' Szymkiewicz–Simpson coefficient of edges
-#' 
-#' @param ig1 An igraph object
-#' @param ig2 An igraph object
-#' @return An edge similarity
-#' 
-#' @importFrom igraph graph_from_adjacency_matrix intersection ecount
-#' @importFrom dplyr %>%
-#' 
-#' @export
-graph.similarity <- function(ig1, ig2) {
-    if (is(ig1, "matrix")) ig1 <- igraph::graph_from_adjacency_matrix(ig1, mode="undirected", diag=FALSE)
-    if (is(ig2, "matrix")) ig2 <- igraph::graph_from_adjacency_matrix(ig2, mode="undirected", diag=FALSE)
-    
-    igraph::intersection(ig1, ig2, byname=FALSE) %>%
-    igraph::ecount() %>%
-    ( function(x) x / min(ecount(ig1), ecount(ig2)) )
-}
-
-#' Barabasi-Albert algorithm for scale-free graphs
-#' 
-#' @param p The number of vertices
-#' @param seed The starting igraph for the preferential attachment algorithm
-#' @param ... One or morge arguments passed to the algorithm
-#' @return An igraph object
-#' 
-#' @importFrom igraph sample_pa
-#' 
-#' @export
-sim.graph <- function(p, seed=NULL, ...) {
-    igraph::sample_pa(n=p, directed=FALSE, algorithm="psumtree", start.graph=seed, ...)
-}
-
-#' Simulate a range of scale-free graphs of different similarity
-#' 
-#' @param n The number of graphs
-#' @param p.graphs The number of desired vertices
-#' @param p.start The number of vertices in the seed graph for the least similar graphs
-#' @param p.step The step size between the seed graphs for the least and most similar grpahs
-#' @return A list of graphs with decreasing similarity
-#' 
-#' @importFrom dplyr %>%
-#' 
-#' @export
-sim.graphs <- function(n, p.graphs, p.start=p.graphs/2, p.step=(p.start-p.graphs)/10, ...) {
-    
-    # Decreasing length of diverging preferential attachment
-    iter <- seq(p.graphs, p.start, as.integer(p.step))
-    names(iter) <- paste("P", iter, sep="")
-    
-    simulation <- lapply(iter, function(p) {
-        
-        # Generate seed
-        seed <- sim.graph(p)
-        
-        # Extend graphs
-        graphs <- lapply(seq(n), function(x) {
-            sim.graph(p=p.graphs, seed=seed, ...)
-        })
-        
-        # Calculate pairwise similarity of graphs
-        similarity <- combn(graphs, 2, function(x) {
-            graph.similarity(x[[1]], x[[2]])
-        }) %>%
-        mean()
-        
-        list(seed=seed, graphs=graphs, similarity=similarity)
-    })
-    return(simulation)
 }

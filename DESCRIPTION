@@ -1,6 +1,6 @@
 Package: shine
 Title: Bayesian Structure Learning for Hierarchical Networks
-Version: 1.0.0
+Version: 0.0.01
 Authors@R: c(person(given="Anthony", family="Federico", email="anfed@bu.edu", 
              role=c("aut", "cre"),
              comment = c(ORCID = "0000-0002-9200-1689")),
@@ -17,12 +17,16 @@ Imports:
     BDgraph,
     Biobase,
     WGCNA,
+    MASS,
     R6,
+    ggplot2,
     flashClust,
     dynamicTreeCut,
     DiagrammeR,
     stringr,
     doParallel,
+    reshape2,
+    scales,
     dplyr,
     magrittr,
     reticulate

@@ -21,8 +21,8 @@ model.edges <- function(ig, rev=FALSE) {
 #' @keywords internal
 model.rename <- function(ig, prefix="G") {
     ids <- paste(prefix, igraph::V(ig), sep="")
-    igraph::V(ig)$name <- ids
-    igraph::V(ig)$label <- ids
+    ig <- set.vertex.attribute(ig, "name", value=ids)
+    ig <- set.vertex.attribute(ig, "label", value=ids)
     return(ig)
 }
 
@@ -78,11 +78,11 @@ model.mpa <- function(p=300, m=6, q.hub=0.95, m.links=6, power=1.7, z.appeal=1, 
     
     # Create scale-free modules
     graphs <- lapply(seq_len(m), function(x) {
-        g.x <- sample_pa(m.size, 
-                         power=power, 
-                         zero.appeal=z.appeal, 
-                         directed=FALSE, 
-                         ...)
+        g.x <- igraph::sample_pa(m.size, 
+                                 power=power, 
+                                 zero.appeal=z.appeal, 
+                                 directed=FALSE, 
+                                 ...)
         
         igraph::V(g.x)$module <- x
         igraph::V(g.x)$hub <- igraph::degree(g.x) >= quantile(igraph::degree(g.x), q.hub)
@@ -217,24 +217,18 @@ models.plot <- function(igs) {
 #' Plot model degree distribution
 #' 
 #' @param ig An igraph object
-#' @return A ggplot object
-#' 
-#' @import ggplot2
+#' @return A plot
 #' 
 #' @export
 model.kd <- function(ig) {
     k <- igraph::degree(ig)
-    k.nz <- k[k > 0]
-    df <- data.frame(k=seq(0, max(k.nz)), pk=igraph::degree_distribution(ig))
-    df <- df[df$pk > 0, ]
-    ggplot(df) +
-    geom_point(aes(x=k, y=pk)) + 
-    scale_y_continuous(trans='log10') +
-    scale_x_continuous(trans='log10') +
-    ylab("P(k)") +
-    xlab("k") +
-    ggtitle("Degree Distribution") +
-    theme_bw()
+    pk <- prop.table(table(k))
+    df <- data.frame(k=as.numeric(names(pk)), pk=as.numeric(pk))
+    df <- df[df$k > 0,]
+    plot(x=df$k, y=df$pk, log="xy",
+         main="Degree Distribution",
+         ylab="P(k)",
+         xlab="k")
 }
 
 #' Simulate multivariate gaussian data for a model
@@ -251,6 +245,6 @@ model.sim <- function(n, ig, seed=1) {
     # Wrap data in expression set object
     eset <- Biobase::ExpressionSet(t(bdg$data))
     colnames(eset) <- paste("S", colnames(eset), sep="")
-    rownames(eset) <- colnames(adj)
+
     return(list(bdg=bdg, eset=eset))
 }

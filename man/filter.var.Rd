@@ -4,7 +4,7 @@
 \alias{filter.var}
 \title{Filter variables with zero variance in one or more subtypes}
 \usage{
-filter.var(eset, column, subtypes, fn = var)
+\method{filter}{var}(eset, column, subtypes, fn = var)
 }
 \arguments{
 \item{eset}{An expression set object}

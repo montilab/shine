@@ -10,7 +10,7 @@ model.kd(ig)
 \item{ig}{An igraph object}
 }
 \value{
-A ggplot object
+A plot
 }
 \description{
 Plot model degree distribution

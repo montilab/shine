@@ -2,7 +2,7 @@
 % Please edit documentation in R/pcor.R
 \name{blanket.new}
 \alias{blanket.new}
-\title{Create a new blanket covering the entire graph}
+\title{Create a new blanket covering the entire graph search space}
 \usage{
 blanket.new(genes, val = 0)
 }
@@ -13,5 +13,5 @@ blanket.new(genes, val = 0)
 A gene by gene matrix filled with zeroes
 }
 \description{
-Create a new blanket covering the entire graph
+Create a new blanket covering the entire graph search space
 }

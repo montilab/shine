@@ -10,10 +10,10 @@
 #' @export
 bdg.estimate <- function(data, mpl=FALSE, ...) {
     if (mpl) {
-        return( BDgraph::bdgraph.mpl(data=data, method="ggm", ...) )
+        return(BDgraph::bdgraph.mpl(data=data, method="ggm", ...))
     }
     else {
-        return( BDgraph::bdgraph(data=data, method="ggm", ...) )
+        return(BDgraph::bdgraph(data=data, method="ggm", ...))
     }
 }
 
@@ -31,7 +31,6 @@ bdg.estimate <- function(data, mpl=FALSE, ...) {
 #' @export
 bdg.metanet <- function(eigs, cut=0.5, mpl=FALSE, ...) {
     bdg <- bdg.estimate(data=eigs, mpl=mpl, ...)
-    
     adj <- BDgraph::select(bdg, cut=cut)
     ig <- igraph::graph_from_adjacency_matrix(adj, mode="undirected", diag=FALSE)
     edges <- igraph::as_edgelist(ig)
@@ -83,7 +82,7 @@ bdg.islands <- function(data, prior, mpl=FALSE, ...) {
     return(posterior)
 }
 
-#' Create a new blanket covering the entire graph
+#' Create a new blanket covering the entire graph search space
 #' 
 #' @param genes The genes of the graph
 #' @return A gene by gene matrix filled with zeroes
@@ -95,46 +94,37 @@ blanket.new <- function(genes, val=0) {
     return(blanket)
 }
 
-# A good test
-#blanket <- blanket.new(wgcna$genes, val=0)
-#blanket <- blanket.add.mods(blanket, wgcna$mods, val=1)
-#table(blanket)
-#c <- components(igraph::graph_from_adjacency_matrix(blanket, mode="undirected"))
-#sort(table(wgcna$colors))
-#sort(table(c$membership))
-
-#' Lifts the blanket from single modules
+#' Lifts the blanket from within or between modules
 #' 
 #' @param blanket A blanket matrix
 #' @param mods A list of co-expression modules to fill in
+#' @param pairs A dataframe of pairs of co-expression modules to fill in
 #' @return A blanket matrix
 #' 
 #' @export
-blanket.add.mods <- function(blanket, mods, val=0.5) {
+blanket.lift <- function(blanket, mods, pairs=NULL, val=0.5) {
+    # Within modules
     for (m in mods) {
         blanket[m, m] <- val
     }
-    return(blanket)
-}
-
-#' Lifts the blanket from pairs of modules
-#' 
-#' @param blanket A blanket matrix
-#' @param mods A list of co-expression modules
-#' @param modpairs A dataframe of pairs of co-expression modules to fill in
-#' @return A blanket matrix
-#' 
-#' @export
-blanket.add.modpairs <- function(blanket, mods, modpairs, val=0.5) {
-    for(row in seq(nrow(modpairs))) {
-        m1 <- mods[[modpairs[row,1]]]
-        m2 <- mods[[modpairs[row,2]]]
-        blanket[m1, m2] <- val
-        blanket[m2, m1] <- val
+    # Between modules
+    if (!is.null(pairs)) {
+        for(row in seq(nrow(pairs))) {
+            m1 <- mods[[pairs[row,1]]]
+            m2 <- mods[[pairs[row,2]]]
+            blanket[m1, m2] <- val
+            blanket[m2, m1] <- val
+        }
     }
     return(blanket)
 }
 
+#' Computes complexity reduction of the blanket
+#' 
+#' @param blanket A blanket matrix
+#' @return Fold complexity reduction
+#' 
+#' @export
 blanket.cred <- function(blanket) {
     ut <- blanket[upper.tri(blanket, diag=FALSE)]
     length(ut) / sum(ut != 0)

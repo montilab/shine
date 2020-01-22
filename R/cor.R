@@ -5,7 +5,7 @@
 #' @return A plot
 #'  
 #' @keywords internal
-plt.soft <- function(sft, powers) {
+sft.plot <- function(sft, powers) {
     plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
          xlab="Soft Threshold (power)",
          ylab="Scale Free Topology Model Fit,signed R^2",
@@ -24,7 +24,7 @@ plt.soft <- function(sft, powers) {
 #' @return A theshold
 #' 
 #' @keywords internal
-check.sft <- function(sft) {
+sft.check <- function(sft) {
     beta <- sft$powerEstimate
     if (is.na(beta)) {
         beta <- 6 # Default
@@ -85,10 +85,10 @@ mods.detect <- function(eset,
                                     RsquaredCut=min.sft, 
                                     powerVector=powers)
     
-    if (do.plot) plt.soft(sft, powers)
+    if (do.plot) sft.plot(sft, powers)
     
     # Check selected power
-    beta <- check.sft(sft)
+    beta <- sft.check(sft)
     
     # Construct co-expression similarity
     adj <- WGCNA::adjacency(datExpr=dat, 
@@ -168,6 +168,92 @@ mods.detect <- function(eset,
                 args=args))
 }
 
+# Plot membership of all genes for one module
+#'
+#' @import ggplot2
+#' @importFrom dplyr %>% mutate filter
+#' @importFrom magrittr set_colnames
+#' @importFrom reshape2 melt
+#' @importFrom scales percent
+#' 
+#' @export
+mod.plot <- function(dat,
+                     mods,
+                     mod,
+                     colors,
+                     size=1,
+                     fn=bicor) {
+    
+    # Module eigengenes
+    me.1 <- get.eigengenes(dat, mods, k=1)
+    me.2 <- get.eigengenes(dat, mods, k=2)
+    
+    # Variance explained
+    ex.1 <- exp.eigengene(dat, mods[[mod]], k=1)
+    ex.2 <- exp.eigengene(dat, mods[[mod]], k=2)
+    
+    # Module membership    
+    mm.1 <- mods.membership(dat, me.1, fn=fn)
+    mm.2 <- mods.membership(dat, me.2, fn=fn)
+    
+    # Melt and merge
+    mm.1.melt <- reshape2::melt(as.matrix(mm.1))
+    mm.2.melt <- reshape2::melt(as.matrix(mm.2))
+    mm.x.melt <- merge(mm.1.melt, mm.2.melt, by.x=c("Var1", "Var2"), by.y=c("Var1", "Var2")) %>%
+                 magrittr::set_colnames(c("gene", "module", "MM1", "MM2")) %>%
+                 dplyr::mutate(primary = colors[gene]) %>%
+                 dplyr::mutate(membership = as.integer(primary == module)) %>%
+                 dplyr::filter(module == mod)
+    
+    color.values <- setNames(unique(colors), unique(colors))
+    ggplot(mm.x.melt, aes(x=MM1, y=MM2, fill=primary)) +
+    geom_point(size=size, shape=21, color="black") +
+    scale_fill_manual(values=color.values) +
+    ggtitle(mod) +
+    xlab(paste("MM1 ", "(", percent(ex.1), ")", sep="")) + 
+    ylab(paste("MM2 ", "(", percent(ex.2), ")", sep="")) +
+    theme_bw()
+}
+
+# Plot membership of all genes for all modules
+#' 
+#' @import ggplot2
+#' @importFrom dplyr %>% mutate filter
+#' @importFrom magrittr set_colnames
+#' @importFrom reshape2 melt
+#' 
+#' @export
+mods.plot <- function(dat,
+                      mods, 
+                      colors,
+                      size=1,
+                      ncol=round(sqrt(length(mods))),
+                      fn=bicor) {
+    
+    # Module eigengenes
+    me.1 <- get.eigengenes(dat, mods, k=1)
+    me.2 <- get.eigengenes(dat, mods, k=2)
+    
+    # Module membership    
+    mm.1 <- mods.membership(dat, me.1, fn=fn)
+    mm.2 <- mods.membership(dat, me.2, fn=fn)
+    
+    # Melt and merge
+    mm.1.melt <- reshape2::melt(as.matrix(mm.1))
+    mm.2.melt <- reshape2::melt(as.matrix(mm.2))
+    mm.x.melt <- merge(mm.1.melt, mm.2.melt, by.x=c("Var1", "Var2"), by.y=c("Var1", "Var2")) %>%
+                 magrittr::set_colnames(c("gene", "module", "MM1", "MM2")) %>%
+                 dplyr::mutate(primary = colors[gene]) %>%
+                 dplyr::mutate(membership = as.integer(primary == module))
+    
+    color.values <- setNames(unique(colors), unique(colors))
+    ggplot(mm.x.melt, aes(x=MM1, y=MM2, fill=primary)) +
+    geom_point(size=size, shape=21, color="black") +
+    scale_fill_manual(values=color.values) +
+    facet_wrap(~module, ncol=ncol, scales="free") +
+    theme_bw()
+}
+
 # Eigengene for one module from the kth principal component
 #' 
 #' @export
@@ -176,7 +262,16 @@ get.eigengene <- function(dat, mod, k=1) {
     svd(t(dat[, mod]))$v[,k]
 }
 
-# Eigengene for all modules from the kth principal component 
+# Variance explained by eigengen for one module from the kth principal component
+#' 
+#' @export
+exp.eigengene <- function(dat, mod, k=1) {
+    d <- svd(t(dat[, mod]))$d
+    prop <- d^2/sum(d^2)
+    prop[k]
+}
+
+# Eigengenes for all modules from the kth principal component 
 #' 
 #' @export
 get.eigengenes <- function(dat, mods, k=1) {
@@ -189,23 +284,104 @@ get.eigengenes <- function(dat, mods, k=1) {
 # Module membership by correlation with eigengene for one module 
 #' 
 #' @export
-fuzzy.membership <- function(dat, me, fn=bicor) {
+mods.membership <- function(dat, me, fn=bicor) {
     stopifnot(rownames(dat) == rownames(me))
     abs(fn(dat, me))
 }
 
-# Extend modules by a quantile of multiple module eigengenes
+#' Classify fuzzy modules with quadratic discriminant analysis
+#' 
+#' @import ggplot2
+#' @importFrom dplyr %>% mutate
+#' @importFrom reshape2 melt
+#' @importFrom MASS qda
 #' 
 #' @export
-fuzzy.mods <- function(dat, mods, q=0.5, k=1, fn=bicor) {
-    me.x <- lapply(seq(k), function(x) get.eigengenes(dat, mods, x))
-    fm.x <- lapply(me.x, function(me) fuzzy.membership(dat, me, fn=fn))
-    fm.sum <-  Reduce('+', fm.x)
+fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
     
+    # Module eigengenes
+    me.1 <- get.eigengenes(dat, mods, k=1)
+    me.2 <- get.eigengenes(dat, mods, k=2)
+    
+    # Module membership    
+    mm.1 <- mods.membership(dat, me.1, fn=fn)
+    mm.2 <- mods.membership(dat, me.2, fn=fn)
+
+    data <- data.frame(MM1=mm.1[,mod], MM2=mm.2[,mod], stringsAsFactors=F) %>%
+            dplyr::mutate(gene = rownames(mm.1)) %>%
+            dplyr::mutate(membership = gene %in% mods[[mod]]) %>%
+            dplyr::mutate(membership = as.factor(as.integer(membership)))
+    
+    # Quadratic Discriminant Analysis
+    dat <- data[,c("MM1", "MM2", "membership")]
+    model <- MASS::qda(membership ~ ., data=dat, prior=c(0.5, 0.5))
+    predictions <- predict(model, dat, type="class")
+    df <- cbind(data, predictions$posterior[,"1"], predictions$class)
+    colnames(df) <- c("MM1", "MM2", "gene", "membership", "posterior", "prediction")
+    
+    return(list(df=df, model=model))
+}
+
+#' Visualize fuzzy module classification
+#' 
+#' @import ggplot2
+#' @importFrom dplyr %>% mutate case_when
+#' 
+#' @export
+fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
+    fp <- fuzzy.predict(dat, mods, mod, fn=fn)
+    
+    # Extract model and data
+    df <- fp$df
+    model <- fp$model
+
+    # Generate values for the entire map
+    r <- sapply(df[,1:2], range, na.rm=TRUE)
+    x <- seq(r[1,1], r[2,1], length.out=resolution)
+    y <- seq(r[1,2], r[2,2], length.out=resolution)
+    g <- cbind(rep(x, each=resolution), rep(y, time=resolution))
+    colnames(g) <- colnames(r)
+    g <- as.data.frame(g)
+    
+    # Predict probabilities of those values
+    p <- predict(model, g)
+    z <- matrix(p$posterior[,"1"], nrow=resolution, byrow=TRUE)
+    mat <- data.frame(x=rep(x, length(y)), y=rep(y, each=length(x)), posterior=as.vector(z))
+    
+    memberships <- c("Primary Member" = "#2F9599", # Teal
+                     "Fuzzy Member"   = "#F7DB4F", # Yellow
+                     "Lost Member"    = "#EC2049", # Red
+                     "Outsider"       = "#474747") # Grey
+
+    df %<>% dplyr::mutate(status = dplyr::case_when(membership == 1 & prediction == 1 ~ "Primary Member",
+                                                    membership == 0 & prediction == 1 ~ "Fuzzy Member",  
+                                                    membership == 1 & prediction == 0 ~ "Lost Member",  
+                                                    TRUE ~ "Outsider")) %>%
+            dplyr::mutate(status = factor(status, levels=names(memberships)))
+            
+    ggplot(df, aes(x=MM1, y=MM2)) +
+    geom_tile(data=mat, aes(x=x, y=y, fill=posterior), alpha=0.90) +
+    scale_fill_gradient(low="#FFFFFF", high="#A7226E") +
+    geom_point(size=size, aes(color=status)) +
+    scale_color_manual(values=memberships) + 
+    theme_classic() +
+    ggtitle(mod)
+}
+
+#' Classify fuzzy modules with quadratic disciminant analysis
+#' 
+#' @importFrom dplyr %>% filter pull
+#' 
+#' @export
+fuzzy.mods <- function(dat, mods, fn=bicor) {
     mapply(function(mod.name, mod.members) {
-        fm.mod <- fm.sum[,mod.name]
-        fm.members <- fm.mod[mod.members]
-        fm.members.fuzzy <- fm.mod[fm.mod >= quantile(fm.members, q)]
-        union(mod.members, names(fm.members.fuzzy))
+        
+        fp <- fuzzy.predict(dat, mods, mod=mod.name, fn=fn)
+        fuzzy.members <- fp$df %>%
+                         dplyr::filter(prediction == 1) %>%
+                         dplyr::pull(gene)
+        
+        union(mod.members, fuzzy.members)
+        
     }, names(mods), mods, SIMPLIFY=FALSE)
 }

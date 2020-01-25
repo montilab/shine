@@ -6,6 +6,14 @@
 \usage{
 model.rename(ig, prefix = "G")
 }
+\arguments{
+\item{ig}{An igraph object}
+
+\item{prefix}{A prefix for vertex labels}
+}
+\value{
+An igraph object
+}
 \description{
 Rename igraph vertices as characters
 }

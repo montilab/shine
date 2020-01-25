@@ -8,6 +8,8 @@ blanket.new(genes, val = 0)
 }
 \arguments{
 \item{genes}{The genes of the graph}
+
+\item{val}{Initial matrix values}
 }
 \value{
 A gene by gene matrix filled with zeroes

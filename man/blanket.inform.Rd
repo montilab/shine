@@ -4,12 +4,16 @@
 \alias{blanket.inform}
 \title{Adds prior information where the blanket is lifted}
 \usage{
-blanket.inform(blanket, prior)
+blanket.inform(blanket, prior.edges, prior.blanket = NULL, val = 0.5)
 }
 \arguments{
 \item{blanket}{A blanket matrix}
 
-\item{prior}{A matrix of probabilities with the same dimensions as the blanket}
+\item{prior.edges}{A matrix of prior edge probabilities}
+
+\item{prior.blanket}{The blanket used in estimating prior edge probabilities}
+
+\item{val}{Value for when a prior blanket is included}
 }
 \value{
 A blanket matrix

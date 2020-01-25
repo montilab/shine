@@ -2,10 +2,22 @@
 % Please edit documentation in R/cor.R
 \name{fuzzy.predict}
 \alias{fuzzy.predict}
-\title{Classify fuzzy modules with quadratic discriminant analysis}
+\title{Classify fuzzy membership for a module with quadratic discriminant analysis}
 \usage{
 fuzzy.predict(dat, mods, mod, fn = bicor)
 }
+\arguments{
+\item{dat}{Expression data}
+
+\item{mods}{A list of modules}
+
+\item{mod}{A module name}
+
+\item{fn}{A correlation function}
+}
+\value{
+The model and a dataframe of classifications
+}
 \description{
-Classify fuzzy modules with quadratic discriminant analysis
+Classify fuzzy membership for a module with quadratic discriminant analysis
 }

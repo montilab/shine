@@ -53,11 +53,13 @@ pvector <- R6Class("pvector", list(
 #' @param subtypes One or more unique subtypes
 #' @param fn A function required to be non-zero
 #' 
+#' @return A vector of filtered genes
+#' 
 #' @importFrom Biobase exprs pData
 #'  
 #' @export
 filter.var <- function(eset, column, subtypes, fn=var) {
-    type <- pData(eset)[,column]
+    type <- Biobase::pData(eset)[,column]
     variable.genes <- list()
     for (i in subtypes) {
         eset.sub <- eset[,type == i]
@@ -77,11 +79,13 @@ filter.var <- function(eset, column, subtypes, fn=var) {
 #' @param genes Allowed genes
 #' @param fn A function to rank variables by
 #' 
+#' @return A vector of selected genes
+#' 
 #' @importFrom Biobase exprs pData
 #'  
 #' @export
 select.var <- function(eset, column, subtypes, limit=2500, genes=rownames(eset), fn=mad) {
-    type <- pData(eset)[,column]
+    type <- Biobase::pData(eset)[,column]
     ranked.genes <- list()
     for (i in subtypes) {
         eset.sub <- eset[,type == i]

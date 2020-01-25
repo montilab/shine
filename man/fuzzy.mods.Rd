@@ -6,6 +6,16 @@
 \usage{
 fuzzy.mods(dat, mods, fn = bicor)
 }
+\arguments{
+\item{dat}{Expression data}
+
+\item{mods}{A list of modules}
+
+\item{fn}{A correlation function}
+}
+\value{
+A list of fuzzy modules
+}
 \description{
 Classify fuzzy modules with quadratic disciminant analysis
 }

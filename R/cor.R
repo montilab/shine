@@ -2,6 +2,7 @@
 #' 
 #' @param sft Table of values for scale-free fit
 #' @param powers The power vector tested
+#' 
 #' @return A plot
 #'  
 #' @keywords internal
@@ -21,6 +22,7 @@ sft.plot <- function(sft, powers) {
 #' Check and choose a soft threshold
 #' 
 #' @param sft Table of values for scale-free fit
+#' 
 #' @return A theshold
 #' 
 #' @keywords internal
@@ -46,6 +48,7 @@ sft.check <- function(sft) {
 #' @param merging Merge similar modules by eigengene
 #' @param merging.cut Maximum dissimilarity that qualifies modules for merging
 #' @param do.plot Use true to see plots
+#' 
 #' @return A list of data pertaining to resulting co-expression modules
 #' 
 #' @import WGCNA
@@ -168,39 +171,116 @@ mods.detect <- function(eset,
                 args=args))
 }
 
-# Plot membership of all genes for one module
+#' Module eigengene from the kth principal component for a module
 #'
+#' @param dat Expression data
+#' @param mod A module of genes
+#' @param k The principal component to use
+#' 
+#' @return An eigengene for the kth principle component
+#' 
+#' @keywords internal
+eig.get <- function(dat, mod, k=1) {
+    svd(t(dat[, mod]))$v[,k]
+}
+
+#' Variance explained by eigengen from the kth principal component for a module
+#'
+#' @param dat Expression data
+#' @param mod A module of genes
+#' @param k The principal component to use
+#' 
+#' @return Variance explained by the kth principle component
+#' 
+#' @keywords internal
+eig.exp <- function(dat, mod, k=1) {
+    d <- svd(t(dat[, mod]))$d
+    prop <- d^2/sum(d^2)
+    prop[k]
+}
+
+#' Module eigengenes from the kth principal component for all modules
+#'
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param k The principal component to use
+#' 
+#' @return A matrix of module eigengenes
+#' 
+#' @importFrom magrittr set_rownames
+#' 
+#' @export
+me.get <- function(dat, mods, k=1) {
+    lapply(mods, function(mod) eig.get(dat, mod, k)) %>%
+    do.call(cbind, .) %>%
+    as.data.frame() %>%
+    magrittr::set_rownames(rownames(dat))
+}
+
+#' Module memberships by correlation with eigengene for a module 
+#'
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param k The principal component to use
+#' @param fn A correlation function
+#' 
+#' @return A matrix of module memberships
+#' 
+#' @importFrom WGCNA bicor
+#' 
+#' @export
+mm.get <- function(dat, mods, k=1, fn=bicor) {
+    me <- me.get(dat, mods, k)
+    abs(fn(dat, me))
+}
+
+#' Wrapper to merge module memberships for the first two eigengenes
+#'
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param fn A correlation function
+#' 
+#' @return A dataframe of module memberships
+#' 
+#' @importFrom WGCNA bicor
+#' @importFrom reshape2 melt
+#' @importFrom magrittr set_colnames
+#' 
+#' @export
+mm.merged <- function(dat, mods, fn=bicor) {
+    mm.1 <- mm.get(dat, mods, k=1, fn=fn)
+    mm.2 <- mm.get(dat, mods, k=2, fn=fn)
+    
+    mm.1.melt <- reshape2::melt(as.matrix(mm.1))
+    mm.2.melt <- reshape2::melt(as.matrix(mm.2))
+    
+    merge(mm.1.melt, mm.2.melt, by.x=c("Var1", "Var2"), by.y=c("Var1", "Var2")) %>%
+    magrittr::set_colnames(c("gene", "module", "MM1", "MM2"))
+}
+
+#' Plot membership of all genes for one module
+#'
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param mod A module name
+#' @param colors Gene colors
+#' @param size Size of data points
+#' @param fn A correlation function
+#' 
+#' @return A ggplot object
+#' 
 #' @import ggplot2
 #' @importFrom dplyr %>% mutate filter
-#' @importFrom magrittr set_colnames
-#' @importFrom reshape2 melt
 #' @importFrom scales percent
 #' 
 #' @export
-mod.plot <- function(dat,
-                     mods,
-                     mod,
-                     colors,
-                     size=1,
-                     fn=bicor) {
-    
-    # Module eigengenes
-    me.1 <- get.eigengenes(dat, mods, k=1)
-    me.2 <- get.eigengenes(dat, mods, k=2)
+mod.plot <- function(dat, mods, mod, colors, size=1, fn=bicor) {
     
     # Variance explained
-    ex.1 <- exp.eigengene(dat, mods[[mod]], k=1)
-    ex.2 <- exp.eigengene(dat, mods[[mod]], k=2)
-    
-    # Module membership    
-    mm.1 <- mods.membership(dat, me.1, fn=fn)
-    mm.2 <- mods.membership(dat, me.2, fn=fn)
-    
-    # Melt and merge
-    mm.1.melt <- reshape2::melt(as.matrix(mm.1))
-    mm.2.melt <- reshape2::melt(as.matrix(mm.2))
-    mm.x.melt <- merge(mm.1.melt, mm.2.melt, by.x=c("Var1", "Var2"), by.y=c("Var1", "Var2")) %>%
-                 magrittr::set_colnames(c("gene", "module", "MM1", "MM2")) %>%
+    ex.1 <- eig.exp(dat, mods[[mod]], k=1)
+    ex.2 <- eig.exp(dat, mods[[mod]], k=2)
+
+    mm.x.melt <- mm.merged(dat, mods, fn) %>% 
                  dplyr::mutate(primary = colors[gene]) %>%
                  dplyr::mutate(membership = as.integer(primary == module)) %>%
                  dplyr::filter(module == mod)
@@ -215,81 +295,50 @@ mod.plot <- function(dat,
     theme_bw()
 }
 
-# Plot membership of all genes for all modules
+#' Plot membership of all genes for all modules
+#' 
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param colors Gene colors
+#' @param size Size of data points
+#' @param ncol Number of facet columns
+#' @param legend Use true to include legend
+#' @param fn A correlation function
+#' 
+#' @return A ggplot object
 #' 
 #' @import ggplot2
 #' @importFrom dplyr %>% mutate filter
-#' @importFrom magrittr set_colnames
-#' @importFrom reshape2 melt
+#' 
+#' @return A ggplot object
 #' 
 #' @export
-mods.plot <- function(dat,
-                      mods, 
-                      colors,
-                      size=1,
-                      ncol=round(sqrt(length(mods))),
-                      fn=bicor) {
+mods.plot <- function(dat, mods, colors, size=1, ncol=round(sqrt(length(mods))), legend=FALSE, fn=bicor) {
     
-    # Module eigengenes
-    me.1 <- get.eigengenes(dat, mods, k=1)
-    me.2 <- get.eigengenes(dat, mods, k=2)
-    
-    # Module membership    
-    mm.1 <- mods.membership(dat, me.1, fn=fn)
-    mm.2 <- mods.membership(dat, me.2, fn=fn)
-    
-    # Melt and merge
-    mm.1.melt <- reshape2::melt(as.matrix(mm.1))
-    mm.2.melt <- reshape2::melt(as.matrix(mm.2))
-    mm.x.melt <- merge(mm.1.melt, mm.2.melt, by.x=c("Var1", "Var2"), by.y=c("Var1", "Var2")) %>%
+    mm.x.melt <- mm.merged(dat, mods, fn) %>% 
                  magrittr::set_colnames(c("gene", "module", "MM1", "MM2")) %>%
                  dplyr::mutate(primary = colors[gene]) %>%
                  dplyr::mutate(membership = as.integer(primary == module))
     
     color.values <- setNames(unique(colors), unique(colors))
-    ggplot(mm.x.melt, aes(x=MM1, y=MM2, fill=primary)) +
-    geom_point(size=size, shape=21, color="black") +
-    scale_fill_manual(values=color.values) +
-    facet_wrap(~module, ncol=ncol, scales="free") +
-    theme_bw()
+    p <- ggplot(mm.x.melt, aes(x=MM1, y=MM2, fill=primary)) +
+         geom_point(size=size, shape=21, color="black") +
+         scale_fill_manual(values=color.values) +
+         facet_wrap(~module, ncol=ncol, scales="free") +
+         theme_bw()
+
+    if (!legend) p <- p + theme(legend.position="none")
+    return(p)
 }
 
-# Eigengene for one module from the kth principal component
+#' Classify fuzzy membership for a module with quadratic discriminant analysis
 #' 
-#' @export
-get.eigengene <- function(dat, mod, k=1) {
-    #prcomp(dat[, mod], scale=TRUE, center=TRUE)$x[,k]
-    svd(t(dat[, mod]))$v[,k]
-}
-
-# Variance explained by eigengen for one module from the kth principal component
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param mod A module name
+#' @param fn A correlation function
 #' 
-#' @export
-exp.eigengene <- function(dat, mod, k=1) {
-    d <- svd(t(dat[, mod]))$d
-    prop <- d^2/sum(d^2)
-    prop[k]
-}
-
-# Eigengenes for all modules from the kth principal component 
-#' 
-#' @export
-get.eigengenes <- function(dat, mods, k=1) {
-    lapply(mods, function(mod) get.eigengene(dat, mod, k)) %>%
-    do.call(cbind, .) %>%
-    as.data.frame() %>%
-    magrittr::set_rownames(rownames(dat))
-}
-
-# Module membership by correlation with eigengene for one module 
-#' 
-#' @export
-mods.membership <- function(dat, me, fn=bicor) {
-    stopifnot(rownames(dat) == rownames(me))
-    abs(fn(dat, me))
-}
-
-#' Classify fuzzy modules with quadratic discriminant analysis
+#' @return The model and a dataframe of classifications
 #' 
 #' @import ggplot2
 #' @importFrom dplyr %>% mutate
@@ -298,14 +347,9 @@ mods.membership <- function(dat, me, fn=bicor) {
 #' 
 #' @export
 fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
-    
-    # Module eigengenes
-    me.1 <- get.eigengenes(dat, mods, k=1)
-    me.2 <- get.eigengenes(dat, mods, k=2)
-    
-    # Module membership    
-    mm.1 <- mods.membership(dat, me.1, fn=fn)
-    mm.2 <- mods.membership(dat, me.2, fn=fn)
+
+    mm.1 <- mm.get(dat, mods, k=1, fn=fn)
+    mm.2 <- mm.get(dat, mods, k=2, fn=fn)    
 
     data <- data.frame(MM1=mm.1[,mod], MM2=mm.2[,mod], stringsAsFactors=F) %>%
             dplyr::mutate(gene = rownames(mm.1)) %>%
@@ -324,11 +368,21 @@ fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
 
 #' Visualize fuzzy module classification
 #' 
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param mod A module name
+#' @param size Size of data points
+#' @param resolution Resolution of heatmap
+#' @param fn A correlation function
+#' 
+#' @return A ggplot object
+#' 
 #' @import ggplot2
 #' @importFrom dplyr %>% mutate case_when
 #' 
 #' @export
 fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
+    
     fp <- fuzzy.predict(dat, mods, mod, fn=fn)
     
     # Extract model and data
@@ -370,10 +424,17 @@ fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
 
 #' Classify fuzzy modules with quadratic disciminant analysis
 #' 
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param fn A correlation function
+#' 
+#' @return A list of fuzzy modules
+#' 
 #' @importFrom dplyr %>% filter pull
 #' 
 #' @export
 fuzzy.mods <- function(dat, mods, fn=bicor) {
+    
     mapply(function(mod.name, mod.members) {
         
         fp <- fuzzy.predict(dat, mods, mod=mod.name, fn=fn)

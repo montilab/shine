@@ -6,6 +6,18 @@
 \usage{
 bdg.islands(data, prior, mpl = FALSE, ...)
 }
+\arguments{
+\item{data}{An n x p matrix of data}
+
+\item{prior}{A matrix of prior edge probabilities}
+
+\item{mpl}{Use true for marginal pseudo-likehlihood}
+
+\item{...}{One or more arguments passed to bdgraph}
+}
+\value{
+A matrix of posterior edge probabilities
+}
 \description{
 Estimate connected components independently
 }

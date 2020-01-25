@@ -15,6 +15,9 @@
 
 \item{fn}{A function required to be non-zero}
 }
+\value{
+A vector of filtered genes
+}
 \description{
 Filter variables with zero variance in one or more subtypes
 }

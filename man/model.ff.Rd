@@ -6,6 +6,18 @@
 \usage{
 model.ff(p = 300, fw.prob = 0.3, bw.factor = 0.5, ...)
 }
+\arguments{
+\item{p}{The number of vertices in the graph}
+
+\item{fw.prob}{The probability for foward burning}
+
+\item{bw.factor}{The backward burning ratio}
+
+\item{...}{Additional arguments passed to /code{igraph::sample_forestfire}}
+}
+\value{
+An igraph object
+}
 \description{
 Simulate network via forest fire model
 }

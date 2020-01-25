@@ -6,6 +6,16 @@
 \usage{
 model.sim(n, ig, seed = 1)
 }
+\arguments{
+\item{n}{The number of samples to generate data for}
+
+\item{ig}{An igraph object for the graph structure}
+
+\item{seed}{A number to seed the random data}
+}
+\value{
+The true graph structure and multivariate gaussian data
+}
 \description{
 Simulate multivariate gaussian data for a model
 }

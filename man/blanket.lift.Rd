@@ -12,6 +12,8 @@ blanket.lift(blanket, mods, pairs = NULL, val = 0.5)
 \item{mods}{A list of co-expression modules to fill in}
 
 \item{pairs}{A dataframe of pairs of co-expression modules to fill in}
+
+\item{val}{Value for lifted links}
 }
 \value{
 A blanket matrix

@@ -10,6 +10,8 @@ model.plot(ig, seed = 1, colors = FALSE)
 \item{ig}{An igraph object}
 
 \item{seed}{A number to seed random layouts}
+
+\item{colors}{Use true to include vertex colors in plot}
 }
 \value{
 A graph visualization

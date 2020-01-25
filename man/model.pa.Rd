@@ -6,6 +6,18 @@
 \usage{
 model.pa(p = 300, power = 1, z.appeal = 1, ...)
 }
+\arguments{
+\item{p}{The number of vertices in the graph}
+
+\item{power}{The power of the preferential attachment}
+
+\item{z.appeal}{The attractiveness of the vertices with no adjacent edges}
+
+\item{...}{Additional arguments passed to /code{igraph::sample_pa}}
+}
+\value{
+An igraph object
+}
 \description{
 Simulate network via preferential attachment model
 }

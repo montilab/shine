@@ -6,6 +6,20 @@
 \usage{
 model.mer(p = 300, m = 6, m.prob = 0.07, n.inter = 1, ...)
 }
+\arguments{
+\item{p}{The number of vertices in the graph}
+
+\item{m}{The number of islands in the graph}
+
+\item{m.prob}{The probability to create each possible edge into each island}
+
+\item{n.inter}{The number of edges to create between two islands}
+
+\item{...}{Additional arguments passed to /code{igraph::sample_islands}}
+}
+\value{
+An igraph object
+}
 \description{
 Simulate network via modular erdos-renyi model
 }

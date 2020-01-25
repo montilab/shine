@@ -6,6 +6,16 @@
 \usage{
 model.er(p = 300, e.prob = 0.01, ...)
 }
+\arguments{
+\item{p}{The number of vertices in the graph}
+
+\item{e.prob}{A probability for drawing an edge between two arbitrary vertices}
+
+\item{...}{Additional arguments passed to /code{igraph::sample_gnp}}
+}
+\value{
+An igraph object
+}
 \description{
 Simulate network via erdos-renyi model
 }

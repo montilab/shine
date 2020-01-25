@@ -26,6 +26,9 @@ select.var(
 
 \item{fn}{A function to rank variables by}
 }
+\value{
+A vector of selected genes
+}
 \description{
 Select variables by median absolute deviation across one or more subtypes
 }

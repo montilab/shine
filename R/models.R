@@ -2,6 +2,7 @@
 #' 
 #' @param ig An igraph object
 #' @param rev Use true to return reversed edges
+#' 
 #' @return A character vector of edges
 #' 
 #' @importFrom igraph as_data_frame
@@ -18,11 +19,18 @@ model.edges <- function(ig, rev=FALSE) {
 
 #' Rename igraph vertices as characters
 #' 
+#' @param ig An igraph object
+#' @param prefix A prefix for vertex labels
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph V set.vertex.attribute
+#' 
 #' @keywords internal
 model.rename <- function(ig, prefix="G") {
     ids <- paste(prefix, igraph::V(ig), sep="")
-    ig <- set.vertex.attribute(ig, "name", value=ids)
-    ig <- set.vertex.attribute(ig, "label", value=ids)
+    ig <- igraph::set.vertex.attribute(ig, "name", value=ids)
+    ig <- igraph::set.vertex.attribute(ig, "label", value=ids)
     return(ig)
 }
 
@@ -30,6 +38,7 @@ model.rename <- function(ig, prefix="G") {
 #' 
 #' @param ig1 An igraph object
 #' @param ig2 An igraph object
+#' 
 #' @return An edge similarity
 #' 
 #' @importFrom igraph graph_from_adjacency_matrix intersection ecount
@@ -42,12 +51,13 @@ model.similarity <- function(ig1, ig2) {
     
     igraph::intersection(ig1, ig2, byname=FALSE) %>%
     igraph::ecount() %>%
-    ( function(x) x / min(ecount(ig1), ecount(ig2)) )
+    ( function(x) x / min(igraph::ecount(ig1), igraph::ecount(ig2)) )
 }
 
 #' Edge similarity of two or more graphs
 #' 
 #' @param igs A list of igraph objects
+#' 
 #' @return An edge similarity
 #' 
 #' @importFrom dplyr %>%
@@ -60,7 +70,16 @@ models.similarity <- function(igs) {
     mean()
 }
 
-#' Rename igraph vertices as characters
+#' Simulate diverging models through preferential attachment
+#' 
+#' @param n The number of divergent graphs to create
+#' @param p The number of vertices in the divergent graph 
+#' @param seed An igraph object to start algorithm from
+#' @param ... Additional arguments passed to /code{igraph::sample_pa}
+#' 
+#' @return A list of igraph objects
+#' 
+#' @importFrom igraph sample_pa
 #' 
 #' @export
 model.hpa <- function(n, p, seed, ...) {
@@ -70,6 +89,18 @@ model.hpa <- function(n, p, seed, ...) {
 }
 
 #' Simulate network via modular preferential attachment model
+#' 
+#' @param p The number of vertices in the graph
+#' @param m The number of modules
+#' @param q.hub The quantile for degree cutoff for defining modular hubs  
+#' @param m.links The number of links between modules
+#' @param power The power of the preferential attachment
+#' @param z.appeal The attractiveness of the vertices with no adjacent edges
+#' @param ... Additional arguments passed to /code{igraph::sample_pa}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph V E edges degree sample_pa
 #' 
 #' @export
 model.mpa <- function(p=300, m=6, q.hub=0.95, m.links=6, power=1.7, z.appeal=1, ...) {
@@ -121,6 +152,16 @@ model.mpa <- function(p=300, m=6, q.hub=0.95, m.links=6, power=1.7, z.appeal=1, 
 
 #' Simulate network via modular erdos-renyi model
 #' 
+#' @param p The number of vertices in the graph
+#' @param m The number of islands in the graph
+#' @param m.prob The probability to create each possible edge into each island
+#' @param n.inter The number of edges to create between two islands
+#' @param ... Additional arguments passed to /code{igraph::sample_islands}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph sample_islands
+#' 
 #' @export
 model.mer <- function(p=300, m=6, m.prob=0.07, n.inter=1, ...) {
     igraph::sample_islands(islands.n=m, 
@@ -131,6 +172,15 @@ model.mer <- function(p=300, m=6, m.prob=0.07, n.inter=1, ...) {
 }
 
 #' Simulate network via preferential attachment model
+#' 
+#' @param p The number of vertices in the graph
+#' @param power The power of the preferential attachment
+#' @param z.appeal The attractiveness of the vertices with no adjacent edges
+#' @param ... Additional arguments passed to /code{igraph::sample_pa}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph sample_pa
 #' 
 #' @export
 model.pa <- function(p=300, power=1, z.appeal=1, ...) {
@@ -143,6 +193,16 @@ model.pa <- function(p=300, power=1, z.appeal=1, ...) {
 
 #' Simulate network via small world model
 #' 
+#' @param p The number of vertices in the graph
+#' @param dim The dimension of the starting lattice
+#' @param nei The neighborhood within which the vertices of the lattice will be connected
+#' @param rw.prob The probability for rewiring
+#' @param ... Additional arguments passed to /code{igraph::sample_smallworld}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph sample_smallworld
+#' 
 #' @export
 model.sw <- function(p=300, dim=1, nei=3, rw.prob=0.05, ...) {
     igraph::sample_smallworld(size=p, 
@@ -153,6 +213,15 @@ model.sw <- function(p=300, dim=1, nei=3, rw.prob=0.05, ...) {
 }
 
 #' Simulate network via forest fire model
+#' 
+#' @param p The number of vertices in the graph
+#' @param fw.prob The probability for foward burning
+#' @param bw.factor The backward burning ratio
+#' @param ... Additional arguments passed to /code{igraph::sample_forestfire}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph sample_forestfire
 #' 
 #' @export
 model.ff <- function(p=300, fw.prob=0.3, bw.factor=0.5, ...) {
@@ -165,18 +234,28 @@ model.ff <- function(p=300, fw.prob=0.3, bw.factor=0.5, ...) {
 
 #' Simulate network via erdos-renyi model
 #' 
+#' @param p The number of vertices in the graph
+#' @param e.prob A probability for drawing an edge between two arbitrary vertices
+#' @param ... Additional arguments passed to /code{igraph::sample_gnp}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph sample_gnp
+#' 
 #' @export
 model.er <- function(p=300, e.prob=0.01, ...) {
     igraph::sample_gnp(n=p, 
                        p=e.prob,
                        directed=FALSE,
-                        ...)
+                       ...)
 }
 
 #' Plot model
 #' 
 #' @param ig An igraph object
 #' @param seed A number to seed random layouts
+#' @param colors Use true to include vertex colors in plot
+#' 
 #' @return A graph visualization
 #' 
 #' @export
@@ -199,6 +278,7 @@ model.plot <- function(ig, seed=1, colors=FALSE) {
 #' Plot one or more models highlighting differences
 #' 
 #' @param igs A list of igraph objects
+#' 
 #' @return A graph visualization
 #' 
 #' @export
@@ -217,7 +297,10 @@ models.plot <- function(igs) {
 #' Plot model degree distribution
 #' 
 #' @param ig An igraph object
+#' 
 #' @return A plot
+#' 
+#' @importFrom igraph degree
 #' 
 #' @export
 model.kd <- function(ig) {
@@ -232,6 +315,16 @@ model.kd <- function(ig) {
 }
 
 #' Simulate multivariate gaussian data for a model
+#' 
+#' @param n The number of samples to generate data for
+#' @param ig An igraph object for the graph structure
+#' @param seed A number to seed the random data
+#' 
+#' @return The true graph structure and multivariate gaussian data
+#' 
+#' @importFrom BDgraph bdgraph.sim
+#' @importFrom Biobase ExpressionSet
+#' @importFrom igraph get.adjacency
 #' 
 #' @export
 model.sim <- function(n, ig, seed=1) {

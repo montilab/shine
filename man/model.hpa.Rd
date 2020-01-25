@@ -2,10 +2,22 @@
 % Please edit documentation in R/models.R
 \name{model.hpa}
 \alias{model.hpa}
-\title{Rename igraph vertices as characters}
+\title{Simulate diverging models through preferential attachment}
 \usage{
 model.hpa(n, p, seed, ...)
 }
+\arguments{
+\item{n}{The number of divergent graphs to create}
+
+\item{p}{The number of vertices in the divergent graph}
+
+\item{seed}{An igraph object to start algorithm from}
+
+\item{...}{Additional arguments passed to /code{igraph::sample_pa}}
+}
+\value{
+A list of igraph objects
+}
 \description{
-Rename igraph vertices as characters
+Simulate diverging models through preferential attachment
 }

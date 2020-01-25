@@ -14,6 +14,24 @@ model.mpa(
   ...
 )
 }
+\arguments{
+\item{p}{The number of vertices in the graph}
+
+\item{m}{The number of modules}
+
+\item{q.hub}{The quantile for degree cutoff for defining modular hubs}
+
+\item{m.links}{The number of links between modules}
+
+\item{power}{The power of the preferential attachment}
+
+\item{z.appeal}{The attractiveness of the vertices with no adjacent edges}
+
+\item{...}{Additional arguments passed to /code{igraph::sample_pa}}
+}
+\value{
+An igraph object
+}
 \description{
 Simulate network via modular preferential attachment model
 }

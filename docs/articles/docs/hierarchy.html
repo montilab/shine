@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -151,8 +151,8 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb10-6"><a href="#cb10-6"></a><span class="st">"</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a></span>
 <span id="cb10-8"><a href="#cb10-8"></a><span class="kw"><a href="../../reference/plt.hierarchy.html">plt.hierarchy</a></span>(hierarchy)</span></code></pre></div>
-<div id="htmlwidget-32519793eab237352214" style="width:288px;height:96px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-32519793eab237352214">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA\nB\nC\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here we first learn the root network - combining samples from groups A, B, and C - and then use this network as a prior for learning each group individually.</p>
+<div id="htmlwidget-def42293a698df48b588" style="width:288px;height:96px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-def42293a698df48b588">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA\nB\nC\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here we first learn the root network - combining samples from groups A, B, and C - and then use this network as a prior for learning each group individually.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>condition &lt;-<span class="st"> "subtype"</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>hierarchy &lt;-<span class="st"> "</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="st">A_B_C -&gt; A</span></span>
@@ -161,8 +161,8 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb11-6"><a href="#cb11-6"></a><span class="st">"</span></span>
 <span id="cb11-7"><a href="#cb11-7"></a></span>
 <span id="cb11-8"><a href="#cb11-8"></a><span class="kw"><a href="../../reference/plt.hierarchy.html">plt.hierarchy</a></span>(hierarchy)</span></code></pre></div>
-<div id="htmlwidget-0942d35376d326899730" style="width:288px;height:192px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0942d35376d326899730">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A\nA_B_C -> B\nA_B_C -> C\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here is the same as previously, except there are internal nodes which are learned before dependent leaf nodes.</p>
+<div id="htmlwidget-7cab8b455e9566f8f5d3" style="width:288px;height:192px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7cab8b455e9566f8f5d3">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A\nA_B_C -> B\nA_B_C -> C\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here is the same as previously, except there are internal nodes which are learned before dependent leaf nodes.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>condition &lt;-<span class="st"> "subtype"</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>hierarchy &lt;-<span class="st"> "</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="st">A_B_C -&gt; A_B</span></span>
@@ -172,8 +172,8 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb12-7"><a href="#cb12-7"></a><span class="st">"</span></span>
 <span id="cb12-8"><a href="#cb12-8"></a></span>
 <span id="cb12-9"><a href="#cb12-9"></a><span class="kw"><a href="../../reference/plt.hierarchy.html">plt.hierarchy</a></span>(hierarchy)</span></code></pre></div>
-<div id="htmlwidget-04e0a8b40067f9f6b560" style="width:288px;height:288px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-04e0a8b40067f9f6b560">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A_B\nA_B_C -> C\nA_B -> A\nA_B -> B\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d05c45e8f5b124fee05f" style="width:288px;height:288px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d05c45e8f5b124fee05f">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A_B\nA_B_C -> C\nA_B -> A\nA_B -> B\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="filtering-and-constraints" class="section level1">
 <h1 class="hasAnchor">
@@ -189,13 +189,12 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb13-8"><a href="#cb13-8"></a>eset &lt;-<span class="st"> </span>toy[genes.selected,]</span>
 <span id="cb13-9"><a href="#cb13-9"></a></span>
 <span id="cb13-10"><a href="#cb13-10"></a><span class="co"># Find constraints for structure with zero-order correlations</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a>mods &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/mods.get.html">mods.get</a></span>(eset, <span class="dt">min.size=</span><span class="dv">5</span>, <span class="dt">cores=</span><span class="dv">3</span>, <span class="dt">do.plot=</span><span class="ot">FALSE</span>)</span>
-<span id="cb13-12"><a href="#cb13-12"></a>meta &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/metanet.build.html">metanet.build</a></span>(mods<span class="op">$</span>eigengenes, <span class="dt">cut=</span><span class="fl">0.5</span>, <span class="dt">mpl=</span><span class="ot">TRUE</span>, <span class="dt">iter=</span><span class="dv">20000</span>, <span class="dt">cores=</span><span class="dv">3</span>)</span>
+<span id="cb13-11"><a href="#cb13-11"></a>wgcna &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/mods.detect.html">mods.detect</a></span>(eset, <span class="dt">min.size=</span><span class="dv">5</span>, <span class="dt">cores=</span><span class="dv">3</span>, <span class="dt">do.plot=</span><span class="ot">FALSE</span>)</span>
+<span id="cb13-12"><a href="#cb13-12"></a>metanet &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/bdg.metanet.html">bdg.metanet</a></span>(wgcna<span class="op">$</span>eigengenes, <span class="dt">cut=</span><span class="fl">0.5</span>, <span class="dt">mpl=</span><span class="ot">TRUE</span>, <span class="dt">iter=</span><span class="dv">20000</span>, <span class="dt">cores=</span><span class="dv">3</span>)</span>
 <span id="cb13-13"><a href="#cb13-13"></a></span>
 <span id="cb13-14"><a href="#cb13-14"></a><span class="co"># Set constraints</span></span>
-<span id="cb13-15"><a href="#cb13-15"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.new.html">blanket.new</a></span>(mods<span class="op">$</span>genes)</span>
-<span id="cb13-16"><a href="#cb13-16"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.add.mods.html">blanket.add.mods</a></span>(blanket, mods<span class="op">$</span>mods)</span>
-<span id="cb13-17"><a href="#cb13-17"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.add.modpairs.html">blanket.add.modpairs</a></span>(blanket, mods<span class="op">$</span>mods, meta<span class="op">$</span>metanet.edges)</span></code></pre></div>
+<span id="cb13-15"><a href="#cb13-15"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.new.html">blanket.new</a></span>(wgcna<span class="op">$</span>genes)</span>
+<span id="cb13-16"><a href="#cb13-16"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.lift.html">blanket.lift</a></span>(blanket, wgcna<span class="op">$</span>mods, metanet<span class="op">$</span>edges)</span></code></pre></div>
 </div>
 <div id="generative-workflows" class="section level1">
 <h1 class="hasAnchor">

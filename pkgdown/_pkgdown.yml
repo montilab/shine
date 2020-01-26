@@ -14,36 +14,42 @@ authors:
     href: https://github.com/tetomonti
 
 reference:
-- title: Filtering Methods
+- title: All functions
   desc: ~
   contents:
-  - '`filter.var`'
-  - '`select.var`'
-- title: Estimation Methods
-  desc: ~
-  contents:
-  - '`mods.get`'
-  - '`metanet.build`'
-  - '`blanket.new`'
-  - '`blanket.add.mods`'
-  - '`blanket.add.modpairs`'
+  - '`bdg.estimate`'
+  - '`bdg.islands`'
+  - '`bdg.metanet`'
+  - '`blanket.cred`'
   - '`blanket.inform`'
-- title: Hierarchy Methods
-  desc: ~
-  contents:
-  - '`plt.hierarchy`'
+  - '`blanket.lift`'
+  - '`blanket.new`'
   - '`build.workflow`'
-- title: Simulation Tools
-  desc: ~
-  contents:
-  - '`sim.graph`'
-  - '`sim.graphs`'
-  - '`plt.graph`'
-  - '`plt.graphs`'
-  - '`graph.similarity`'
-- title: Data
-  desc: ~
-  contents:
+  - '`filter.var`'
+  - '`fuzzy.mods`'
+  - '`fuzzy.plot`'
+  - '`fuzzy.predict`'
+  - '`me.get`'
+  - '`mm.get`'
+  - '`mm.merged`'
+  - '`mod.plot`'
+  - '`model.er`'
+  - '`model.ff`'
+  - '`model.hpa`'
+  - '`model.kd`'
+  - '`model.mer`'
+  - '`model.mpa`'
+  - '`model.pa`'
+  - '`model.plot`'
+  - '`model.sim`'
+  - '`model.similarity`'
+  - '`model.sw`'
+  - '`models.plot`'
+  - '`models.similarity`'
+  - '`mods.detect`'
+  - '`mods.plot`'
+  - '`plt.hierarchy`'
+  - '`select.var`'
   - '`toy`'
 
 navbar:

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -101,22 +101,63 @@
 <div id="a-single-network" class="section level1">
 <h1 class="hasAnchor">
 <a href="#a-single-network" class="anchor"></a>A Single Network</h1>
-<p>When learning networks, it may be useful to test your algorithm on simulated data. To help with this, we provide some useful functions for simulating scale-free graphs using the <a href="https://en.wikipedia.org/wiki/Barab%C3%A1si%E2%80%93Albert_model">Barabási–Albert model</a>.</p>
-<p>The Barabási–Albert model is an algorithm for generating random scale-free networks using a preferential attachment mechanism. It incorporates two important general concepts: growth and preferential attachment. Both growth and preferential attachment exist widely in real networks.</p>
+<p>When learning networks, it may be useful to test your algorithm on simulated data. To help with this, we provide some useful functions for simulating undirected networks through different modeling approaches relevant to biological networks.</p>
+<div id="flat-structures" class="section level2">
+<h2 class="hasAnchor">
+<a href="#flat-structures" class="anchor"></a>Flat Structures</h2>
+<div id="scale-free-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#scale-free-model" class="anchor"></a>Scale-free Model</h3>
+<p>A relevant model for biological networks utilizes the <a href="https://en.wikipedia.org/wiki/Barab%C3%A1si%E2%80%93Albert_model">Barabási–Albert model</a> for generating random scale-free networks using a preferential attachment mechanism. It incorporates two important general concepts: growth and preferential attachment. Both growth and preferential attachment exist widely in real networks.</p>
 <ul>
 <li>Growth means that the number of nodes in the network increases over time.<br>
 </li>
 <li>Preferential attachment means that the more connected a node is, the more likely it is to receive new links.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(shine)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/sim.graph.html">sim.graph</a></span>(<span class="dt">p=</span><span class="dv">100</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="../../reference/plt.graph.html">plt.graph</a></span>(g)</span></code></pre></div>
-<p><img src="simulations_files/figure-html/unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.pa.html">model.pa</a></span>(<span class="dv">100</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-3-1.png" width="700" style="display: block; margin: auto;"></p>
+<p>Graphs are initalized with a single node and extended iteratively as new nodes are added to the graph with an edge to an existing node with some probability. This probability is determined partially by the power argument, which gives more or less preference to high-degree nodes. This leads to scale-free structures where a few nodes are hubs in the graph.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>g1 &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.pa.html">model.pa</a></span>(<span class="dv">100</span>, <span class="dt">power=</span><span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>g2 &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.pa.html">model.pa</a></span>(<span class="dv">100</span>, <span class="dt">power=</span><span class="fl">1.3</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>g3 &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.pa.html">model.pa</a></span>(<span class="dv">100</span>, <span class="dt">power=</span><span class="fl">1.5</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="dt">mfrow=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g1)</span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g2)</span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g3)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-4-1.png" width="1152" style="display: block; margin: auto;"></p>
+</div>
+<div id="small-world-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#small-world-model" class="anchor"></a>Small World Model</h3>
+<p>Another relevant model for biological networks utilizes the <a href="https://en.wikipedia.org/wiki/Watts%E2%80%93Strogatz_model">Watts–Strogatz model</a> for generating random graphs with the small world properties, including short average path lengths and high clustering.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.sw.html">model.sw</a></span>(<span class="dv">100</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
+</div>
+<div id="random-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#random-model" class="anchor"></a>Random Model</h3>
+<p>Perhaps the simplest model is the <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model">Erdős–Rényi model</a> for generating random graphs. Through this algorithm, nodes are initalized and edges are drawn arbitrarily at a given probability.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.er.html">model.er</a></span>(<span class="dv">100</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
+</div>
+</div>
+<div id="modular-structures" class="section level2">
+<h2 class="hasAnchor">
+<a href="#modular-structures" class="anchor"></a>Modular Structures</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.mpa.html">model.mpa</a></span>(<span class="dv">200</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g, <span class="dt">colors=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-7-1.png" width="700" style="display: block; margin: auto;"></p>
+</div>
 </div>
 <div id="multiple-networks" class="section level1">
 <h1 class="hasAnchor">
 <a href="#multiple-networks" class="anchor"></a>Multiple Networks</h1>
-<p>When estimating networks in a hierarchy, one assumes networks share some structural features. To generate multiple scale-free networks that share features with a known similarity, we can modify the Barabási–Albert algorithm with the following steps:</p>
+<p>When estimating multiple networks underlying similar biological phenotypes, one may assume networks share some structural features. To generate multiple scale-free networks that share features with a known similarity, we can modify the Barabási–Albert algorithm with the following steps:</p>
 <ul>
 <li>Seed the algorithm with a relatively small graph<br>
 </li>
@@ -124,17 +165,23 @@
 </li>
 <li>Calculate the mean pairwise overlap similarity of edges between networks.</li>
 </ul>
-<p>To do this, we choose a final graph size and the number of networks to generate. The algorithm will start with seed graphs of decreasing size. The smaller the seed graph, the more divergent the resulting networks will be, resulting in a lower similarity.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>simulations &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/sim.graphs.html">sim.graphs</a></span>(<span class="dt">n=</span><span class="dv">3</span>, <span class="dt">p.graphs=</span><span class="dv">100</span>, <span class="dt">p.start=</span><span class="dv">50</span>, <span class="dt">p.step=</span><span class="op">-</span><span class="dv">10</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="cf">for</span> (s <span class="cf">in</span> simulations) {</span>
-<span id="cb4-4"><a href="#cb4-4"></a>    ig1 &lt;-<span class="st"> </span>s<span class="op">$</span>graphs[[<span class="dv">1</span>]]</span>
-<span id="cb4-5"><a href="#cb4-5"></a>    ig2 &lt;-<span class="st"> </span>s<span class="op">$</span>graphs[[<span class="dv">2</span>]]</span>
-<span id="cb4-6"><a href="#cb4-6"></a>    ig3 &lt;-<span class="st"> </span>s<span class="op">$</span>graphs[[<span class="dv">3</span>]]</span>
-<span id="cb4-7"><a href="#cb4-7"></a>    <span class="kw"><a href="../../reference/plt.graphs.html">plt.graphs</a></span>(ig1, ig2, ig3)</span>
-<span id="cb4-8"><a href="#cb4-8"></a>    <span class="kw"><a href="https://rdrr.io/r/graphics/title.html">title</a></span>(<span class="dt">main=</span><span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Similarity Measure: "</span>, <span class="kw"><a href="https://rdrr.io/r/base/Round.html">signif</a></span>(s<span class="op">$</span>similarity, <span class="dv">2</span>)))</span>
-<span id="cb4-9"><a href="#cb4-9"></a>}</span></code></pre></div>
-<p><img src="simulations_files/figure-html/unnamed-chunk-5-1.png" width="1152" style="display: block; margin: auto;"><img src="simulations_files/figure-html/unnamed-chunk-5-2.png" width="1152" style="display: block; margin: auto;"><img src="simulations_files/figure-html/unnamed-chunk-5-3.png" width="1152" style="display: block; margin: auto;"><img src="simulations_files/figure-html/unnamed-chunk-5-4.png" width="1152" style="display: block; margin: auto;"><img src="simulations_files/figure-html/unnamed-chunk-5-5.png" width="1152" style="display: block; margin: auto;"><img src="simulations_files/figure-html/unnamed-chunk-5-6.png" width="1152" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.pa.html">model.pa</a></span>(<span class="dv">100</span>, <span class="dt">power=</span><span class="fl">1.3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-8-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>graphs &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.hpa.html">model.hpa</a></span>(<span class="dv">3</span>, <span class="dt">p=</span><span class="dv">120</span>, <span class="dt">seed=</span>g, <span class="dt">power=</span><span class="fl">1.3</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw"><a href="../../reference/models.plot.html">models.plot</a></span>(graphs)</span></code></pre></div>
+<p><img src="simulations_files/figure-html/unnamed-chunk-9-1.png" width="1152" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">percent</span>(<span class="kw"><a href="../../reference/models.similarity.html">models.similarity</a></span>(graphs))</span></code></pre></div>
+<pre><code>[1] "83%"</code></pre>
+</div>
+<div id="generating-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#generating-data" class="anchor"></a>Generating Data</h1>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.pa.html">model.pa</a></span>(<span class="dv">100</span>, <span class="dt">power=</span><span class="fl">1.3</span>)</span>
+<span id="cb11-2"><a href="#cb11-2"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.sim.html">model.sim</a></span>(<span class="dv">50</span>, g)</span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="kw"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(data<span class="op">$</span>eset)</span></code></pre></div>
+<pre><code>Features  Samples 
+     100       50 </code></pre>
 </div>
   </div>
 
@@ -144,8 +191,14 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#a-single-network">A Single Network</a></li>
+<li>
+<a href="#a-single-network">A Single Network</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#flat-structures">Flat Structures</a></li>
+      <li><a href="#modular-structures">Modular Structures</a></li>
+      </ul>
+</li>
       <li><a href="#multiple-networks">Multiple Networks</a></li>
+      <li><a href="#generating-data">Generating Data</a></li>
       </ul>
 </div>
       </div>

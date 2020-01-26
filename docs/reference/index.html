@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -138,75 +138,197 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-filtering-methods" class="hasAnchor"><a href="#section-filtering-methods" class="anchor"></a>Filtering Methods</h2>
+          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
       <tr>
         
         <td>
-          <p><code><a href="filter.var.html">filter.var()</a></code> </p>
+          <p><code><a href="bdg.estimate.html">bdg.estimate()</a></code> </p>
         </td>
-        <td><p>Filter variables with zero variance in one or more subtypes</p></td>
+        <td><p>Wrapper for estimating posterior probabilities with bdgraph</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="select.var.html">select.var()</a></code> </p>
+          <p><code><a href="bdg.islands.html">bdg.islands()</a></code> </p>
         </td>
-        <td><p>Select variables by median absolute deviation across one or more subtypes</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-estimation-methods" class="hasAnchor"><a href="#section-estimation-methods" class="anchor"></a>Estimation Methods</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="mods.get.html">mods.get()</a></code> </p>
-        </td>
-        <td><p>Wrapper for weighted gene co-expression analysis</p></td>
+        <td><p>Estimate connected components independently</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="metanet.build.html">metanet.build()</a></code> </p>
+          <p><code><a href="bdg.metanet.html">bdg.metanet()</a></code> </p>
         </td>
-        <td><p>Build a meta-network from module eigengenes</p></td>
+        <td><p>Estimate a meta-network from module eigengenes</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="blanket.new.html">blanket.new()</a></code> </p>
+          <p><code><a href="blanket.cred.html">blanket.cred()</a></code> </p>
         </td>
-        <td><p>Create a new blanket covering the entire graph</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="blanket.add.mods.html">blanket.add.mods()</a></code> </p>
-        </td>
-        <td><p>Lifts the blanket from single modules</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="blanket.add.modpairs.html">blanket.add.modpairs()</a></code> </p>
-        </td>
-        <td><p>Lifts the blanket from pairs of modules</p></td>
+        <td><p>Computes complexity reduction of the blanket</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="blanket.inform.html">blanket.inform()</a></code> </p>
         </td>
         <td><p>Adds prior information where the blanket is lifted</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-hierarchy-methods" class="hasAnchor"><a href="#section-hierarchy-methods" class="anchor"></a>Hierarchy Methods</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="blanket.lift.html">blanket.lift()</a></code> </p>
+        </td>
+        <td><p>Lifts the blanket from within or between modules</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="blanket.new.html">blanket.new()</a></code> </p>
+        </td>
+        <td><p>Create a new blanket covering the entire graph search space</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="build.workflow.html">build.workflow()</a></code> </p>
+        </td>
+        <td><p>Generate a nextflow workflow</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="filter.var.html">filter(<i>&lt;var&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Filter variables with zero variance in one or more subtypes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="fuzzy.mods.html">fuzzy.mods()</a></code> </p>
+        </td>
+        <td><p>Classify fuzzy modules with quadratic disciminant analysis</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="fuzzy.plot.html">fuzzy.plot()</a></code> </p>
+        </td>
+        <td><p>Visualize fuzzy module classification</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="fuzzy.predict.html">fuzzy.predict()</a></code> </p>
+        </td>
+        <td><p>Classify fuzzy membership for a module with quadratic discriminant analysis</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="me.get.html">me.get()</a></code> </p>
+        </td>
+        <td><p>Module eigengenes from the kth principal component for all modules</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mm.get.html">mm.get()</a></code> </p>
+        </td>
+        <td><p>Module memberships by correlation with eigengene for a module</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mm.merged.html">mm.merged()</a></code> </p>
+        </td>
+        <td><p>Wrapper to merge module memberships for the first two eigengenes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mod.plot.html">mod.plot()</a></code> </p>
+        </td>
+        <td><p>Plot membership of all genes for one module</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.er.html">model.er()</a></code> </p>
+        </td>
+        <td><p>Simulate network via erdos-renyi model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.ff.html">model.ff()</a></code> </p>
+        </td>
+        <td><p>Simulate network via forest fire model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.hpa.html">model.hpa()</a></code> </p>
+        </td>
+        <td><p>Simulate diverging models through preferential attachment</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.kd.html">model.kd()</a></code> </p>
+        </td>
+        <td><p>Plot model degree distribution</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.mer.html">model.mer()</a></code> </p>
+        </td>
+        <td><p>Simulate network via modular erdos-renyi model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.mpa.html">model.mpa()</a></code> </p>
+        </td>
+        <td><p>Simulate network via modular preferential attachment model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.pa.html">model.pa()</a></code> </p>
+        </td>
+        <td><p>Simulate network via preferential attachment model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.plot.html">model.plot()</a></code> </p>
+        </td>
+        <td><p>Plot model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.sim.html">model.sim()</a></code> </p>
+        </td>
+        <td><p>Simulate multivariate gaussian data for a model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.similarity.html">model.similarity()</a></code> </p>
+        </td>
+        <td><p>Szymkiewicz–Simpson coefficient of edges</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="model.sw.html">model.sw()</a></code> </p>
+        </td>
+        <td><p>Simulate network via small world model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="models.plot.html">models.plot()</a></code> </p>
+        </td>
+        <td><p>Plot one or more models highlighting differences</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="models.similarity.html">models.similarity()</a></code> </p>
+        </td>
+        <td><p>Edge similarity of two or more graphs</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mods.detect.html">mods.detect()</a></code> </p>
+        </td>
+        <td><p>Wrapper for weighted gene co-expression analysis</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mods.plot.html">mods.plot()</a></code> </p>
+        </td>
+        <td><p>Plot membership of all genes for all modules</p></td>
+      </tr><tr>
         
         <td>
           <p><code><a href="plt.hierarchy.html">plt.hierarchy()</a></code> </p>
@@ -215,56 +337,10 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="build.workflow.html">build.workflow()</a></code> </p>
+          <p><code><a href="select.var.html">select.var()</a></code> </p>
         </td>
-        <td><p>Generate a nextflow workflow</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-simulation-tools" class="hasAnchor"><a href="#section-simulation-tools" class="anchor"></a>Simulation Tools</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="sim.graph.html">sim.graph()</a></code> </p>
-        </td>
-        <td><p>Barabasi-Albert algorithm for scale-free graphs</p></td>
+        <td><p>Select variables by median absolute deviation across one or more subtypes</p></td>
       </tr><tr>
-        
-        <td>
-          <p><code><a href="sim.graphs.html">sim.graphs()</a></code> </p>
-        </td>
-        <td><p>Simulate a range of scale-free graphs of different similarity</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plt.graph.html">plt.graph()</a></code> </p>
-        </td>
-        <td><p>Plot an igraph object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plt.graphs.html">plt.graphs()</a></code> </p>
-        </td>
-        <td><p>Plot multiple igraph objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="graph.similarity.html">graph.similarity()</a></code> </p>
-        </td>
-        <td><p>Szymkiewicz–Simpson coefficient of edges</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-data" class="hasAnchor"><a href="#section-data" class="anchor"></a>Data</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
         
         <td>
           <p><code><a href="toy.html">toy</a></code> </p>
@@ -278,11 +354,7 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-filtering-methods">Filtering Methods</a></li>
-      <li><a href="#section-estimation-methods">Estimation Methods</a></li>
-      <li><a href="#section-hierarchy-methods">Hierarchy Methods</a></li>
-      <li><a href="#section-simulation-tools">Simulation Tools</a></li>
-      <li><a href="#section-data">Data</a></li>
+      <li><a href="#section-all-functions">All functions</a></li>
     </ul>
   </div>
 </div>

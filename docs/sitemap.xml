@@ -4,13 +4,22 @@
     <loc>https://github.com/montilab/shine/index.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/blanket.add.modpairs.html</loc>
+    <loc>https://github.com/montilab/shine/reference/bdg.estimate.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/blanket.add.mods.html</loc>
+    <loc>https://github.com/montilab/shine/reference/bdg.islands.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/bdg.metanet.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/blanket.cred.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/blanket.inform.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/blanket.lift.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/blanket.new.html</loc>
@@ -19,46 +28,103 @@
     <loc>https://github.com/montilab/shine/reference/build.workflow.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/check.sft.html</loc>
+    <loc>https://github.com/montilab/shine/reference/eig.exp.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/eig.get.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/filter.var.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/graph.similarity.html</loc>
+    <loc>https://github.com/montilab/shine/reference/fuzzy.mods.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/metanet.build.html</loc>
+    <loc>https://github.com/montilab/shine/reference/fuzzy.plot.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/mods.get.html</loc>
+    <loc>https://github.com/montilab/shine/reference/fuzzy.predict.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/plt.graph.html</loc>
+    <loc>https://github.com/montilab/shine/reference/me.get.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/plt.graphs.html</loc>
+    <loc>https://github.com/montilab/shine/reference/mm.get.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/mm.merged.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/mod.plot.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.edges.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.er.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.ff.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.hpa.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.kd.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.mer.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.mpa.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.pa.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.plot.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.rename.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.sim.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.similarity.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/model.sw.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/models.plot.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/models.similarity.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/mods.detect.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/mods.plot.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/plt.hierarchy.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/plt.soft.html</loc>
+    <loc>https://github.com/montilab/shine/reference/pvector.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/pvector.html</loc>
+    <loc>https://github.com/montilab/shine/reference/rcolors.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/select.var.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/sim.graph.html</loc>
+    <loc>https://github.com/montilab/shine/reference/sft.check.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/sim.graphs.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/montilab/shine/reference/string.edges.html</loc>
+    <loc>https://github.com/montilab/shine/reference/sft.plot.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/toy.html</loc>

@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -135,7 +135,7 @@
     <p>Adds prior information where the blanket is lifted</p>
     </div>
 
-    <pre class="usage"><span class='fu'>blanket.inform</span>(<span class='no'>blanket</span>, <span class='no'>prior</span>)</pre>
+    <pre class="usage"><span class='fu'>blanket.inform</span>(<span class='no'>blanket</span>, <span class='no'>prior.edges</span>, <span class='kw'>prior.blanket</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>val</span> <span class='kw'>=</span> <span class='fl'>0.5</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,8 +145,16 @@
       <td><p>A blanket matrix</p></td>
     </tr>
     <tr>
-      <th>prior</th>
-      <td><p>A matrix of probabilities with the same dimensions as the blanket</p></td>
+      <th>prior.edges</th>
+      <td><p>A matrix of prior edge probabilities</p></td>
+    </tr>
+    <tr>
+      <th>prior.blanket</th>
+      <td><p>The blanket used in estimating prior edge probabilities</p></td>
+    </tr>
+    <tr>
+      <th>val</th>
+      <td><p>Value for when a prior blanket is included</p></td>
     </tr>
     </table>
 

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -98,92 +98,110 @@
 
     
     
-<p>To aid in the inference of networks with small sample sizes, we apply biolgically sensible constraints to learning the network structure. To find constraints for the networks, we first establish a network structure in a lower dimensional space (a meta network) using zero-order correlation between genes, which can be computed with few samples.</p>
+<p>To aid in the inference of networks with small sample sizes, we apply biolgically sensible constraints to learning the network structure. To find constraints for the networks, we first establish a network structure in a lower dimensional space using zero-order correlation between genes, which can be computed with few samples.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(shine)</span></code></pre></div>
-<div id="step-0---simulated-data" class="section level1">
+<div id="simulated-data" class="section level1">
 <h1 class="hasAnchor">
-<a href="#step-0---simulated-data" class="anchor"></a>Step 0 - Simulated Data</h1>
+<a href="#simulated-data" class="anchor"></a>Simulated Data</h1>
 <p>As an example, we generate an undirected scale-free network using the Barabási–Albert model with 300 nodes (n) and simulate 100 samples (p) that follow a multivariate normal distribution.</p>
 <div id="generate-scale-free-graph" class="section level3">
 <h3 class="hasAnchor">
 <a href="#generate-scale-free-graph" class="anchor"></a>Generate Scale-Free Graph</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>graph &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/sim.graph.html">sim.graph</a></span>(<span class="dv">300</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(graph, <span class="dt">vertex.color=</span><span class="st">"grey"</span>, <span class="dt">vertex.size=</span><span class="dv">4</span>, <span class="dt">vertex.label=</span><span class="ot">NA</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">123</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>g &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.mpa.html">model.mpa</a></span>(<span class="dv">300</span>, <span class="dt">power=</span><span class="fl">1.3</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g)</span></code></pre></div>
 <p><img src="constraints_files/figure-html/unnamed-chunk-3-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
 <div id="simulate-multivariate-gaussian-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#simulate-multivariate-gaussian-data" class="anchor"></a>Simulate Multivariate Gaussian Data</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a>adj &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(igraph<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/igraph/man/as_adjacency_matrix.html">get.adjacency</a></span>(graph))</span>
-<span id="cb3-3"><a href="#cb3-3"></a>bdg &lt;-<span class="st"> </span><span class="kw">bdgraph.sim</span>(<span class="dt">n=</span><span class="dv">100</span>, <span class="dt">graph=</span>adj, <span class="dt">type=</span><span class="st">"Gaussian"</span>, <span class="dt">vis=</span>F)</span>
-<span id="cb3-4"><a href="#cb3-4"></a>eset &lt;-<span class="st"> </span><span class="kw">ExpressionSet</span>(<span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(bdg<span class="op">$</span>data))</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">123</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>data &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/model.sim.html">model.sim</a></span>(<span class="dt">n=</span><span class="dv">75</span>, g)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>bdg &lt;-<span class="st"> </span>data<span class="op">$</span>bdg</span>
+<span id="cb3-4"><a href="#cb3-4"></a>eset &lt;-<span class="st"> </span>data<span class="op">$</span>eset</span></code></pre></div>
 </div>
 </div>
-<div id="step-1---get-modules" class="section level1">
+<div id="constraint-methods" class="section level1">
 <h1 class="hasAnchor">
-<a href="#step-1---get-modules" class="anchor"></a>Step 1 - Get Modules</h1>
+<a href="#constraint-methods" class="anchor"></a>Constraint Methods</h1>
 <p>We use a specific version of the <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559">Weighted Gene Co-Expression Analysis</a> method to identify gene modules where are clustered by the similarity (measured by biweight midcorrelation) and hierarchically clustered into gene modules of tightly co-expressed genes. Establishing gene modules captures coordinated co-expression of genes in a network that approximately follows a scale free topology, as do most biological networks, however direct gene-gene connections are abstracted away.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mods &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/mods.get.html">mods.get</a></span>(eset, <span class="dt">min.size=</span><span class="dv">5</span>, <span class="dt">cores=</span><span class="dv">3</span>, <span class="dt">do.plot=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>wgcna &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/mods.detect.html">mods.detect</a></span>(eset, <span class="dt">min.size=</span><span class="dv">5</span>, <span class="dt">cores=</span><span class="dv">3</span>, <span class="dt">do.plot=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 <p><img src="constraints_files/figure-html/unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"><img src="constraints_files/figure-html/unnamed-chunk-5-2.png" width="700" style="display: block; margin: auto;"></p>
-</div>
-<div id="step-2---build-meta-network" class="section level1">
-<h1 class="hasAnchor">
-<a href="#step-2---build-meta-network" class="anchor"></a>Step 2 - Build Meta Network</h1>
-<p>Using this meta network of co-regulated gene modules, we can represent each module as an eigenvector, which is the first principle component (PC1) of the expression values of genes within a given module, resulting in a module x sample matrix. Within this lower-dimensional representation of the network, we establish conditional independence between modules by measuring the pairwise partial correlation.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>meta &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/metanet.build.html">metanet.build</a></span>(mods<span class="op">$</span>eigengenes, </span>
-<span id="cb5-2"><a href="#cb5-2"></a>                      <span class="dt">cut=</span><span class="fl">0.5</span>, </span>
-<span id="cb5-3"><a href="#cb5-3"></a>                      <span class="dt">mpl=</span><span class="ot">TRUE</span>, </span>
-<span id="cb5-4"><a href="#cb5-4"></a>                      <span class="dt">iter=</span><span class="dv">20000</span>,</span>
-<span id="cb5-5"><a href="#cb5-5"></a>                      <span class="dt">cores=</span><span class="dv">3</span>)</span></code></pre></div>
-<p>Here is a visualization of conditional dependence between modules in the meta network…</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">V</span>(meta<span class="op">$</span>metanet.ig)<span class="op">$</span>color &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">V</span>(meta<span class="op">$</span>metanet.ig))</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(meta<span class="op">$</span>metanet.ig, <span class="dt">vertex.size=</span><span class="dv">10</span>, <span class="dt">edge.width=</span><span class="dv">3</span>, <span class="dt">vertex.label=</span><span class="ot">NA</span>)</span></code></pre></div>
-<p><img src="constraints_files/figure-html/unnamed-chunk-7-1.png" width="700" style="display: block; margin: auto;"></p>
+<div id="isolated-modules" class="section level2">
+<h2 class="hasAnchor">
+<a href="#isolated-modules" class="anchor"></a>Isolated Modules</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>wgcna<span class="op">$</span>mods<span class="op">$</span>grey &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(wgcna<span class="op">$</span>mods)</span></code></pre></div>
+<pre><code>List of 19
+ $ pink        : chr [1:16] "1" "3" "4" "8" ...
+ $ lightcyan   : chr [1:8] "2" "5" "6" "7" ...
+ $ tan         : chr [1:11] "11" "98" "161" "229" ...
+ $ greenyellow : chr [1:11] "12" "21" "29" "34" ...
+ $ lightgreen  : chr [1:7] "13" "24" "30" "33" ...
+ $ green       : chr [1:20] "15" "17" "18" "67" ...
+ $ yellow      : chr [1:21] "16" "36" "45" "57" ...
+ $ midnightblue: chr [1:8] "19" "23" "27" "35" ...
+ $ cyan        : chr [1:8] "25" "26" "204" "205" ...
+ $ magenta     : chr [1:14] "28" "107" "128" "144" ...
+ $ turquoise   : chr [1:36] "31" "40" "44" "63" ...
+ $ salmon      : chr [1:10] "39" "99" "100" "108" ...
+ $ blue        : chr [1:31] "42" "54" "70" "78" ...
+ $ black       : chr [1:16] "49" "62" "69" "76" ...
+ $ brown       : chr [1:27] "50" "51" "52" "55" ...
+ $ purple      : chr [1:12] "79" "154" "201" "215" ...
+ $ grey60      : chr [1:7] "85" "153" "158" "160" ...
+ $ red         : chr [1:16] "88" "105" "118" "120" ...
+ $ lightyellow : chr [1:5] "124" "256" "277" "280" ...</code></pre>
+<p>The Markov blanket for a node in a graphical model contains all the variables that shield the node from the rest of the network. This means that the Markov blanket of a node is the only knowledge needed to predict the behavior of that node and its children.</p>
+<p>In our case, for each gene, its markov blanket includes genes within its own module. These blankets makeup the constraint on the network, which vastly reduces the complexity of the search space. If the constraints prevent an edge between two genes, there will be a zero-entry in the matrix, otherwise the probability of an edge will be 0.5, assuming no other prior information is being incorporated.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.new.html">blanket.new</a></span>(wgcna<span class="op">$</span>genes)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.lift.html">blanket.lift</a></span>(blanket, wgcna<span class="op">$</span>mods)</span></code></pre></div>
 <p>Here we relay the modules back on the true graphs structure…</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">V</span>(graph)<span class="op">$</span>color &lt;-<span class="st"> </span>mods<span class="op">$</span>colors</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(graph, <span class="dt">vertex.size=</span><span class="dv">4</span>, <span class="dt">vertex.label=</span><span class="ot">NA</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">V</span>(g)<span class="op">$</span>color &lt;-<span class="st"> </span>wgcna<span class="op">$</span>colors</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw"><a href="../../reference/model.plot.html">model.plot</a></span>(g, <span class="dt">colors=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 <p><img src="constraints_files/figure-html/unnamed-chunk-8-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw"><a href="../../reference/blanket.cred.html">blanket.cred</a></span>(blanket)</span></code></pre></div>
+<pre><code>[1] 16.22871</code></pre>
 </div>
-<div id="step-3---knit-blanket" class="section level1">
-<h1 class="hasAnchor">
-<a href="#step-3---knit-blanket" class="anchor"></a>Step 3 - Knit Blanket</h1>
-<p>The Markov blanket for a node in a graphical model contains all the variables that shield the node from the rest of the network. This means that the Markov blanket of a node is the only knowledge needed to predict the behavior of that node and its children. In our case, for each gene, its markov blanket includes genes within its own module, as well as genes in other conditionally dependent modules. These blankets makeup the constraint on the network, which vastly reduces the complexity of the search space.</p>
-<p>If the constraints prevent an edge between two genes, there will be a zero-entry in the matrix, otherwise the probability of an edge will be 0.5, assuming no other prior information is being utilized.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.new.html">blanket.new</a></span>(mods<span class="op">$</span>genes)</span>
-<span id="cb8-2"><a href="#cb8-2"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.add.mods.html">blanket.add.mods</a></span>(blanket, mods<span class="op">$</span>mods)</span>
-<span id="cb8-3"><a href="#cb8-3"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.add.modpairs.html">blanket.add.modpairs</a></span>(blanket, mods<span class="op">$</span>mods, meta<span class="op">$</span>metanet.edges)</span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="kw"><a href="https://rdrr.io/r/base/table.html">table</a></span>(blanket)</span></code></pre></div>
-<pre><code>blanket
-    0   0.5 
-83712  6288 </code></pre>
-<p>If a network prior is being used…</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.inform.html">blanket.inform</a></span>(blanket, prior)  </span></code></pre></div>
+<div id="fuzzy-modules" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fuzzy-modules" class="anchor"></a>Fuzzy Modules</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw"><a href="../../reference/mods.plot.html">mods.plot</a></span>(wgcna<span class="op">$</span>dat, wgcna<span class="op">$</span>mods, wgcna<span class="op">$</span>colors, <span class="dt">size=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="constraints_files/figure-html/unnamed-chunk-10-1.png" width="1152" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw"><a href="../../reference/mod.plot.html">mod.plot</a></span>(wgcna<span class="op">$</span>dat, wgcna<span class="op">$</span>mods, <span class="dt">mod=</span><span class="st">"green"</span>, wgcna<span class="op">$</span>colors, <span class="dt">size=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="constraints_files/figure-html/unnamed-chunk-11-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw"><a href="../../reference/fuzzy.plot.html">fuzzy.plot</a></span>(wgcna<span class="op">$</span>dat, wgcna<span class="op">$</span>mods, <span class="dt">mod=</span><span class="st">"green"</span>, <span class="dt">size=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="constraints_files/figure-html/unnamed-chunk-12-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>fuzzy &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/fuzzy.mods.html">fuzzy.mods</a></span>(wgcna<span class="op">$</span>dat, wgcna<span class="op">$</span>mods)</span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.new.html">blanket.new</a></span>(wgcna<span class="op">$</span>genes)</span>
+<span id="cb14-4"><a href="#cb14-4"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.lift.html">blanket.lift</a></span>(blanket, fuzzy)</span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="kw"><a href="../../reference/blanket.cred.html">blanket.cred</a></span>(blanket)</span></code></pre></div>
+<pre><code>[1] 6.375222</code></pre>
 </div>
-<div id="step-4---learn-structure" class="section level1">
-<h1 class="hasAnchor">
-<a href="#step-4---learn-structure" class="anchor"></a>Step 4 - Learn Structure</h1>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>bdg &lt;-<span class="st"> </span><span class="kw">bdgraph.mpl</span>(<span class="dt">data=</span><span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="kw">exprs</span>(eset)), </span>
-<span id="cb11-2"><a href="#cb11-2"></a>                   <span class="dt">g.prior=</span>blanket, </span>
-<span id="cb11-3"><a href="#cb11-3"></a>                   <span class="dt">method=</span><span class="st">"ggm"</span>, </span>
-<span id="cb11-4"><a href="#cb11-4"></a>                   <span class="dt">iter=</span><span class="dv">25000</span>,</span>
-<span id="cb11-5"><a href="#cb11-5"></a>                   <span class="dt">cores=</span><span class="dv">3</span>)</span></code></pre></div>
-<p>The goal constraint-based structure learning is to reduce the complexity of the search space by instructing the algorithm to only consider graphs with valid edges. By reducing the complexity, we aim to achieve fewer false positives.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>adj &lt;-<span class="st"> </span>BDgraph<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BDgraph/man/select.html">select</a></span>(bdg, <span class="dt">cut=</span><span class="fl">0.5</span>)</span>
-<span id="cb12-2"><a href="#cb12-2"></a>est &lt;-<span class="st"> </span><span class="kw">graph_from_adjacency_matrix</span>(adj, <span class="dt">mode=</span><span class="st">"undirected"</span>, <span class="dt">diag=</span>F)</span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">V</span>(est)<span class="op">$</span>color &lt;-<span class="st"> </span>mods<span class="op">$</span>colors</span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="kw">E</span>(est)<span class="op">$</span>width &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a><span class="kw">E</span>(est)<span class="op">$</span>color &lt;-<span class="st"> "#030027"</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="kw">E</span>(est)<span class="op">$</span>color[<span class="kw"><a href="../../reference/string.edges.html">string.edges</a></span>(est) <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="../../reference/string.edges.html">string.edges</a></span>(graph)] &lt;-<span class="st"> "#FFA400"</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="kw">E</span>(est)<span class="op">$</span>width[<span class="kw"><a href="../../reference/string.edges.html">string.edges</a></span>(est) <span class="op">%in%</span><span class="st"> </span><span class="kw"><a href="../../reference/string.edges.html">string.edges</a></span>(graph)] &lt;-<span class="st"> </span><span class="dv">3</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a></span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="kw"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="dt">mfrow=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb12-11"><a href="#cb12-11"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">5</span>)</span>
-<span id="cb12-12"><a href="#cb12-12"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(graph, <span class="dt">vertex.size=</span><span class="dv">4</span>, <span class="dt">vertex.label=</span><span class="ot">NA</span>, <span class="dt">label=</span><span class="st">"Truth"</span>)</span>
-<span id="cb12-13"><a href="#cb12-13"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(est, <span class="dt">vertex.size=</span><span class="dv">4</span>, <span class="dt">vertex.label=</span><span class="ot">NA</span>, <span class="dt">label=</span><span class="st">"Estimate"</span>)</span></code></pre></div>
-<p><img src="constraints_files/figure-html/unnamed-chunk-12-1.png" width="1152" style="display: block; margin: auto;"></p>
+<div id="metanet" class="section level2">
+<h2 class="hasAnchor">
+<a href="#metanet" class="anchor"></a>Metanet</h2>
+<p>Using a meta network of co-regulated gene modules, we can represent each module as an eigenvector, which is the first principle component (PC1) of the expression values of genes within a given module, resulting in a module x sample matrix. Within this lower-dimensional representation of the network, we establish conditional independence between modules by measuring the pairwise partial correlation.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>wgcna<span class="op">$</span>mods<span class="op">$</span>grey &lt;-<span class="st"> </span><span class="ot">NULL</span>    </span>
+<span id="cb16-2"><a href="#cb16-2"></a>wgcna<span class="op">$</span>eigengenes<span class="op">$</span>grey &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>  </span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="co"># Estimate meta network</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>metanet &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/bdg.metanet.html">bdg.metanet</a></span>(wgcna<span class="op">$</span>eigengenes, <span class="dt">mpl=</span><span class="ot">TRUE</span>, <span class="dt">iter=</span><span class="dv">25000</span>, <span class="dt">print=</span><span class="dv">5000</span>, <span class="dt">cores=</span><span class="dv">3</span>)</span></code></pre></div>
+<pre><code>25000 iteration is started.                     
+ Iteration  5000                 
+ Iteration  10000                 
+ Iteration  15000                 
+ Iteration  20000                 
+ Iteration  25000                 </code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">V</span>(metanet<span class="op">$</span>ig)<span class="op">$</span>color &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">V</span>(metanet<span class="op">$</span>ig))</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(metanet<span class="op">$</span>ig, <span class="dt">vertex.size=</span><span class="dv">10</span>, <span class="dt">edge.width=</span><span class="dv">3</span>, <span class="dt">vertex.label=</span><span class="ot">NA</span>)</span></code></pre></div>
+<p><img src="constraints_files/figure-html/unnamed-chunk-15-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.new.html">blanket.new</a></span>(wgcna<span class="op">$</span>genes)</span>
+<span id="cb19-2"><a href="#cb19-2"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/blanket.lift.html">blanket.lift</a></span>(blanket, wgcna<span class="op">$</span>mods, metanet<span class="op">$</span>edges)</span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="kw"><a href="../../reference/blanket.cred.html">blanket.cred</a></span>(blanket)</span></code></pre></div>
+<pre><code>[1] 9.096304</code></pre>
+</div>
 </div>
   </div>
 
@@ -193,11 +211,14 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#step-0---simulated-data">Step 0 - Simulated Data</a></li>
-      <li><a href="#step-1---get-modules">Step 1 - Get Modules</a></li>
-      <li><a href="#step-2---build-meta-network">Step 2 - Build Meta Network</a></li>
-      <li><a href="#step-3---knit-blanket">Step 3 - Knit Blanket</a></li>
-      <li><a href="#step-4---learn-structure">Step 4 - Learn Structure</a></li>
+<li><a href="#simulated-data">Simulated Data</a></li>
+      <li>
+<a href="#constraint-methods">Constraint Methods</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#isolated-modules">Isolated Modules</a></li>
+      <li><a href="#fuzzy-modules">Fuzzy Modules</a></li>
+      <li><a href="#metanet">Metanet</a></li>
+      </ul>
+</li>
       </ul>
 </div>
       </div>

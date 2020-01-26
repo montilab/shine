@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -142,13 +142,12 @@
 <h3 class="hasAnchor">
 <a href="#structural-constraints" class="anchor"></a>Structural Constraints</h3>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Find constraints for structure with zero-order correlations</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>mods &lt;-<span class="st"> </span><span class="kw"><a href="reference/mods.get.html">mods.get</a></span>(eset, <span class="dt">min.size=</span><span class="dv">5</span>, <span class="dt">cores=</span><span class="dv">3</span>, <span class="dt">do.plot=</span><span class="ot">FALSE</span>)</span>
-<span id="cb9-3"><a href="#cb9-3"></a>meta &lt;-<span class="st"> </span><span class="kw"><a href="reference/metanet.build.html">metanet.build</a></span>(mods<span class="op">$</span>eigengenes, <span class="dt">cut=</span><span class="fl">0.5</span>, <span class="dt">mpl=</span><span class="ot">TRUE</span>, <span class="dt">iter=</span><span class="dv">20000</span>, <span class="dt">cores=</span><span class="dv">3</span>)</span>
+<span id="cb9-2"><a href="#cb9-2"></a>wgcna &lt;-<span class="st"> </span><span class="kw"><a href="reference/mods.detect.html">mods.detect</a></span>(eset, <span class="dt">min.size=</span><span class="dv">5</span>, <span class="dt">cores=</span><span class="dv">3</span>, <span class="dt">do.plot=</span><span class="ot">FALSE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a>metanet &lt;-<span class="st"> </span><span class="kw"><a href="reference/bdg.metanet.html">bdg.metanet</a></span>(wgcna<span class="op">$</span>eigengenes, <span class="dt">cut=</span><span class="fl">0.5</span>, <span class="dt">mpl=</span><span class="ot">TRUE</span>, <span class="dt">iter=</span><span class="dv">20000</span>, <span class="dt">cores=</span><span class="dv">3</span>)</span>
 <span id="cb9-4"><a href="#cb9-4"></a></span>
 <span id="cb9-5"><a href="#cb9-5"></a><span class="co"># Set constraints</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="reference/blanket.new.html">blanket.new</a></span>(mods<span class="op">$</span>genes)</span>
-<span id="cb9-7"><a href="#cb9-7"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="reference/blanket.add.mods.html">blanket.add.mods</a></span>(blanket, mods<span class="op">$</span>mods)</span>
-<span id="cb9-8"><a href="#cb9-8"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="reference/blanket.add.modpairs.html">blanket.add.modpairs</a></span>(blanket, mods<span class="op">$</span>mods, meta<span class="op">$</span>metanet.edges)</span></code></pre></div>
+<span id="cb9-6"><a href="#cb9-6"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="reference/blanket.new.html">blanket.new</a></span>(wgcna<span class="op">$</span>genes)</span>
+<span id="cb9-7"><a href="#cb9-7"></a>blanket &lt;-<span class="st"> </span><span class="kw"><a href="reference/blanket.lift.html">blanket.lift</a></span>(blanket, wgcna<span class="op">$</span>mods, metanet<span class="op">$</span>edges)</span></code></pre></div>
 </div>
 <div id="hierarchical-network-workflows" class="section level3">
 <h3 class="hasAnchor">

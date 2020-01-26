@@ -124,13 +124,12 @@ genes.selected <- select.var(toy, column="subtype", subtypes=c("A", "B", "C"), g
 eset <- toy[genes.selected,]
 
 # Find constraints for structure with zero-order correlations
-mods <- mods.get(eset, min.size=5, cores=3, do.plot=FALSE)
-meta <- metanet.build(mods$eigengenes, cut=0.5, mpl=TRUE, iter=20000, cores=3)
+wgcna <- mods.detect(eset, min.size=5, cores=3, do.plot=FALSE)
+metanet <- bdg.metanet(wgcna$eigengenes, cut=0.5, mpl=TRUE, iter=20000, cores=3)
 
 # Set constraints
-blanket <- blanket.new(mods$genes)
-blanket <- blanket.add.mods(blanket, mods$mods)
-blanket <- blanket.add.modpairs(blanket, mods$mods, meta$metanet.edges)
+blanket <- blanket.new(wgcna$genes)
+blanket <- blanket.lift(blanket, wgcna$mods, metanet$edges)
 ```
 
 # Generative Workflows

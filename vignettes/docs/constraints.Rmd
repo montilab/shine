@@ -14,109 +14,105 @@ library(igraph)
 devtools::load_all(".")
 ```
 
-To aid in the inference of networks with small sample sizes, we apply biolgically sensible constraints to learning the network structure. To find constraints for the networks, we first establish a network structure in a lower dimensional space (a meta network) using zero-order correlation between genes, which can be computed with few samples.
+To aid in the inference of networks with small sample sizes, we apply biolgically sensible constraints to learning the network structure. To find constraints for the networks, we first establish a network structure in a lower dimensional space using zero-order correlation between genes, which can be computed with few samples.
 
 ```{r, eval=FALSE}
 library(shine)
 ```
 
-# Step 0 - Simulated Data
+# Simulated Data
 
 As an example, we generate an undirected scale-free network using the Barabási–Albert model with 300 nodes (n) and simulate 100 samples (p) that follow a multivariate normal distribution.
 
 ### Generate Scale-Free Graph
 
 ```{r}
-set.seed(1)
-graph <- sim.graph(300)
-plot(graph, vertex.color="grey", vertex.size=4, vertex.label=NA)
+set.seed(123)
+g <- model.mpa(300, power=1.3)
+model.plot(g)
 ```
 
 ### Simulate Multivariate Gaussian Data
 ```{r}
-set.seed(1)
-adj <- as.matrix(igraph::get.adjacency(graph))
-bdg <- bdgraph.sim(n=100, graph=adj, type="Gaussian", vis=F)
-eset <- ExpressionSet(t(bdg$data))
+set.seed(123)
+data <- model.sim(n=75, g)
+bdg <- data$bdg
+eset <- data$eset
 ```
 
-# Step 1 - Get Modules
+# Constraint Methods
 
 We use a specific version of the [Weighted Gene Co-Expression Analysis](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559) method to identify gene modules where are clustered by the similarity (measured by biweight midcorrelation) and hierarchically clustered into gene modules of tightly co-expressed genes. Establishing gene modules captures coordinated co-expression of genes in a network that approximately follows a scale free topology, as do most biological networks, however direct gene-gene connections are abstracted away.
 
 ```{r, results='hide', fig.keep='all'}
-mods <- mods.get(eset, min.size=5, cores=3, do.plot=TRUE)
+wgcna <- mods.detect(eset, min.size=5, cores=3, do.plot=TRUE)
 ```
 
-# Step 2 - Build Meta Network
-
-Using this meta network of co-regulated gene modules, we can represent each module as an eigenvector, which is the first principle component (PC1) of the expression values of genes within a given module, resulting in a module x sample matrix. Within this lower-dimensional representation of the network, we establish conditional independence between modules by measuring the pairwise partial correlation.
-
-```{r, results='hide'}
-meta <- metanet.build(mods$eigengenes, 
-                      cut=0.5, 
-                      mpl=TRUE, 
-                      iter=20000,
-                      cores=3)
+## Isolated Modules
+```{r}
+wgcna$mods$grey <- NULL
+str(wgcna$mods)
 ```
 
-Here is a visualization of conditional dependence between modules in the meta network...
+The Markov blanket for a node in a graphical model contains all the variables that shield the node from the rest of the network. This means that the Markov blanket of a node is the only knowledge needed to predict the behavior of that node and its children.
+
+In our case, for each gene, its markov blanket includes genes within its own module. These blankets makeup the constraint on the network, which vastly reduces the complexity of the search space. If the constraints prevent an edge between two genes, there will be a zero-entry in the matrix, otherwise the probability of an edge will be 0.5, assuming no other prior information is being incorporated.
 
 ```{r}
-V(meta$metanet.ig)$color <- names(V(meta$metanet.ig))
-plot(meta$metanet.ig, vertex.size=10, edge.width=3, vertex.label=NA)
+blanket <- blanket.new(wgcna$genes)
+blanket <- blanket.lift(blanket, wgcna$mods)
 ```
 
 Here we relay the modules back on the true graphs structure...
+```{r}
+V(g)$color <- wgcna$colors
+model.plot(g, colors=TRUE)
+```
 
 ```{r}
-V(graph)$color <- mods$colors
-plot(graph, vertex.size=4, vertex.label=NA)
+blanket.cred(blanket)
 ```
 
-# Step 3 - Knit Blanket
-
-The Markov blanket for a node in a graphical model contains all the variables that shield the node from the rest of the network. This means that the Markov blanket of a node is the only knowledge needed to predict the behavior of that node and its children.
-In our case, for each gene, its markov blanket includes genes within its own module, as well as genes in other conditionally dependent modules. These blankets makeup the constraint on the network, which vastly reduces the complexity of the search space.
-
-If the constraints prevent an edge between two genes, there will be a zero-entry in the matrix, otherwise the probability of an edge will be 0.5, assuming no other prior information is being utilized.
+## Fuzzy Modules
+```{r fig.height=12, fig.width=12}
+mods.plot(wgcna$dat, wgcna$mods, wgcna$colors, size=2)
+```
 
 ```{r}
-blanket <- blanket.new(mods$genes)
-blanket <- blanket.add.mods(blanket, mods$mods)
-blanket <- blanket.add.modpairs(blanket, mods$mods, meta$metanet.edges)
-table(blanket)
+mod.plot(wgcna$dat, wgcna$mods, mod="green", wgcna$colors, size=2)
 ```
 
-If a network prior is being used...
-```{r, eval=FALSE}
-blanket <- blanket.inform(blanket, prior)  
+```{r}
+fuzzy.plot(wgcna$dat, wgcna$mods, mod="green", size=2)
 ```
 
-# Step 4 - Learn Structure
+```{r}
+fuzzy <- fuzzy.mods(wgcna$dat, wgcna$mods)
 
-```{r, results='hide'}
-bdg <- bdgraph.mpl(data=t(exprs(eset)), 
-                   g.prior=blanket, 
-                   method="ggm", 
-                   iter=25000,
-                   cores=3)
+blanket <- blanket.new(wgcna$genes)
+blanket <- blanket.lift(blanket, fuzzy)
+blanket.cred(blanket)
 ```
 
-The goal constraint-based structure learning is to reduce the complexity of the search space by instructing the algorithm to only consider graphs with valid edges. By reducing the complexity, we aim to achieve fewer false positives.
+## Metanet
 
-```{r, fig.width=12}
-adj <- BDgraph::select(bdg, cut=0.5)
-est <- graph_from_adjacency_matrix(adj, mode="undirected", diag=F)
-V(est)$color <- mods$colors
+Using a meta network of co-regulated gene modules, we can represent each module as an eigenvector, which is the first principle component (PC1) of the expression values of genes within a given module, resulting in a module x sample matrix. Within this lower-dimensional representation of the network, we establish conditional independence between modules by measuring the pairwise partial correlation.
 
-E(est)$width <- 1
-E(est)$color <- "#030027"
-E(est)$color[string.edges(est) %in% string.edges(graph)] <- "#FFA400"
-E(est)$width[string.edges(est) %in% string.edges(graph)] <- 3
+```{r}
+wgcna$mods$grey <- NULL    
+wgcna$eigengenes$grey <- NULL
+  
+# Estimate meta network
+metanet <- bdg.metanet(wgcna$eigengenes, mpl=TRUE, iter=25000, print=5000, cores=3)
+``` 
 
-par(mfrow=c(1,2))
-set.seed(5)
-plot(graph, vertex.size=4, vertex.label=NA, label="Truth")
-plot(est, vertex.size=4, vertex.label=NA, label="Estimate")
+```{r}
+V(metanet$ig)$color <- names(V(metanet$ig))
+plot(metanet$ig, vertex.size=10, edge.width=3, vertex.label=NA)
+```
+
+```{r} 
+blanket <- blanket.new(wgcna$genes)
+blanket <- blanket.lift(blanket, wgcna$mods, metanet$edges)
+blanket.cred(blanket)
 ```

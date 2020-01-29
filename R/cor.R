@@ -426,16 +426,18 @@ fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
 #' 
 #' @param dat Expression data
 #' @param mods A list of modules
+#' @param cores The number of cores for parallel execution
 #' @param fn A correlation function
 #' 
 #' @return A list of fuzzy modules
 #' 
 #' @importFrom dplyr %>% filter pull
+#' @importFrom parallel mcmapply
 #' 
 #' @export
-fuzzy.mods <- function(dat, mods, fn=bicor) {
+fuzzy.mods <- function(dat, mods, cores=1, fn=bicor) {
     
-    mapply(function(mod.name, mod.members) {
+    mcmapply(function(mod.name, mod.members) {
         
         fp <- fuzzy.predict(dat, mods, mod=mod.name, fn=fn)
         fuzzy.members <- fp$df %>%
@@ -444,5 +446,5 @@ fuzzy.mods <- function(dat, mods, fn=bicor) {
         
         union(mod.members, fuzzy.members)
         
-    }, names(mods), mods, SIMPLIFY=FALSE)
+    }, names(mods), mods, SIMPLIFY=FALSE, mc.cores=cores)
 }

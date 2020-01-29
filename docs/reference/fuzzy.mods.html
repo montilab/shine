@@ -135,7 +135,7 @@
     <p>Classify fuzzy modules with quadratic disciminant analysis</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fuzzy.mods</span>(<span class='no'>dat</span>, <span class='no'>mods</span>, <span class='kw'>fn</span> <span class='kw'>=</span> <span class='no'>bicor</span>)</pre>
+    <pre class="usage"><span class='fu'>fuzzy.mods</span>(<span class='no'>dat</span>, <span class='no'>mods</span>, <span class='kw'>cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>fn</span> <span class='kw'>=</span> <span class='no'>bicor</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,6 +147,10 @@
     <tr>
       <th>mods</th>
       <td><p>A list of modules</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
+      <td><p>The number of cores for parallel execution</p></td>
     </tr>
     <tr>
       <th>fn</th>

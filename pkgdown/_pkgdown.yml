@@ -14,42 +14,57 @@ authors:
     href: https://github.com/tetomonti
 
 reference:
-- title: All functions
+- title: Models
+  desc: ~
+  contents:
+  - '`model.sw`'
+  - '`model.ff`'
+  - '`model.er`'
+  - '`model.mer`'
+  - '`model.pa`'
+  - '`model.mpa`'
+  - '`model.hpa`'
+  - '`model.kd`'
+  - '`model.sim`'
+  - '`model.plot`'
+  - '`models.plot`'
+  - '`model.similarity`'
+  - '`models.similarity`'
+- title: Filtering
+  desc: ~
+  contents:
+  - '`select.var`'
+  - '`filter.var`'
+- title: Constraints
+  desc: ~
+  contents:
+  - '`mods.detect`'
+  - '`me.get`'
+  - '`mm.get`'
+  - '`mm.merged`'
+  - '`mod.plot`'
+  - '`mods.plot`'
+  - '`fuzzy.mods`'
+  - '`fuzzy.plot`'
+  - '`fuzzy.predict`'
+- title: Estimation
   desc: ~
   contents:
   - '`bdg.estimate`'
   - '`bdg.islands`'
   - '`bdg.metanet`'
+  - '`blanket.new`'
+  - '`blanket.lift`'
   - '`blanket.cred`'
   - '`blanket.inform`'
-  - '`blanket.lift`'
-  - '`blanket.new`'
-  - '`build.workflow`'
-  - '`filter.var`'
-  - '`fuzzy.mods`'
-  - '`fuzzy.plot`'
-  - '`fuzzy.predict`'
-  - '`me.get`'
-  - '`mm.get`'
-  - '`mm.merged`'
-  - '`mod.plot`'
-  - '`model.er`'
-  - '`model.ff`'
-  - '`model.hpa`'
-  - '`model.kd`'
-  - '`model.mer`'
-  - '`model.mpa`'
-  - '`model.pa`'
-  - '`model.plot`'
-  - '`model.sim`'
-  - '`model.similarity`'
-  - '`model.sw`'
-  - '`models.plot`'
-  - '`models.similarity`'
-  - '`mods.detect`'
-  - '`mods.plot`'
+- title: Hierarchy
+  desc: ~
+  contents:
   - '`plt.hierarchy`'
-  - '`select.var`'
+  - '`build.workflow`'
+- title: Datasets
+  desc: ~
+  contents:
   - '`toy`'
 
 navbar:

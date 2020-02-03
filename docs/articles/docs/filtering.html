@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
       </span>
     </div>
 
@@ -133,10 +133,10 @@ G5  1.1543899  0.3910137 -0.4389481 -0.48118378 -1.5107490</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Edit in zero variance in at least one subtype</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a><span class="kw">exprs</span>(toy)[<span class="st">"G2"</span>, toy<span class="op">$</span>subtype <span class="op">==</span><span class="st"> "A"</span>] &lt;-<span class="st"> </span><span class="dv">0</span></span>
 <span id="cb13-3"><a href="#cb13-3"></a></span>
-<span id="cb13-4"><a href="#cb13-4"></a>genes.filtered &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/filter.var.html">filter.var</a></span>(toy, </span>
-<span id="cb13-5"><a href="#cb13-5"></a>                             <span class="dt">column=</span><span class="st">"subtype"</span>, </span>
-<span id="cb13-6"><a href="#cb13-6"></a>                             <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), </span>
-<span id="cb13-7"><a href="#cb13-7"></a>                             <span class="dt">fn=</span>var)</span>
+<span id="cb13-4"><a href="#cb13-4"></a>genes.filtered &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keep.var.html">keep.var</a></span>(toy, </span>
+<span id="cb13-5"><a href="#cb13-5"></a>                           <span class="dt">column=</span><span class="st">"subtype"</span>, </span>
+<span id="cb13-6"><a href="#cb13-6"></a>                           <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), </span>
+<span id="cb13-7"><a href="#cb13-7"></a>                           <span class="dt">fn=</span>var)</span>
 <span id="cb13-8"><a href="#cb13-8"></a></span>
 <span id="cb13-9"><a href="#cb13-9"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(genes.filtered)</span></code></pre></div>
 <pre><code>[1] "G1" "G3" "G4" "G5" "G6" "G7"</code></pre>
@@ -145,12 +145,12 @@ G5  1.1543899  0.3910137 -0.4389481 -0.48118378 -1.5107490</code></pre>
 <h1 class="hasAnchor">
 <a href="#variable-selection" class="anchor"></a>Variable Selection</h1>
 <p>Even after filtering, there still may be too many variables. One method to reduce the number of variables is to rank them by some favorable property and select the top <em>x</em> amount. When finding structural constraints, we rely on biweight midcorrelation which is more reliable when variables have a high median absolute deviation. Since there are multiple networks, we give each network an opportunity to contribute a high-ranking variable in a turn-based system until the limit has been reached.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>genes.selected &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/select.var.html">select.var</a></span>(toy, </span>
-<span id="cb15-2"><a href="#cb15-2"></a>                             <span class="dt">column=</span><span class="st">"subtype"</span>,</span>
-<span id="cb15-3"><a href="#cb15-3"></a>                             <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), </span>
-<span id="cb15-4"><a href="#cb15-4"></a>                             <span class="dt">limit=</span><span class="dv">30</span>, </span>
-<span id="cb15-5"><a href="#cb15-5"></a>                             <span class="dt">genes=</span>genes.filtered, </span>
-<span id="cb15-6"><a href="#cb15-6"></a>                             <span class="dt">fn=</span>mad)</span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>genes.selected &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/rank.var.html">rank.var</a></span>(toy, </span>
+<span id="cb15-2"><a href="#cb15-2"></a>                           <span class="dt">column=</span><span class="st">"subtype"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3"></a>                           <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), </span>
+<span id="cb15-4"><a href="#cb15-4"></a>                           <span class="dt">limit=</span><span class="dv">30</span>, </span>
+<span id="cb15-5"><a href="#cb15-5"></a>                           <span class="dt">genes=</span>genes.filtered, </span>
+<span id="cb15-6"><a href="#cb15-6"></a>                           <span class="dt">fn=</span>mad)</span>
 <span id="cb15-7"><a href="#cb15-7"></a></span>
 <span id="cb15-8"><a href="#cb15-8"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(genes.selected)</span></code></pre></div>
 <pre><code>[1] "G52"  "G109" "G115" "G10"  "G148" "G117"</code></pre>
@@ -160,8 +160,8 @@ G5  1.1543899  0.3910137 -0.4389481 -0.48118378 -1.5107490</code></pre>
 <span id="cb17-4"><a href="#cb17-4"></a>          <span class="dt">defaultPageSize=</span><span class="dv">30</span>,</span>
 <span id="cb17-5"><a href="#cb17-5"></a>          <span class="dt">striped=</span><span class="ot">TRUE</span>,</span>
 <span id="cb17-6"><a href="#cb17-6"></a>          <span class="dt">showPageSizeOptions=</span><span class="ot">FALSE</span>)</span></code></pre></div>
-<div id="htmlwidget-8b804cd60092e7a92f5a" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-8b804cd60092e7a92f5a">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["G52","G109","G115","G10","G148","G117","G71","G20","G44","G51","G25","G19","G12","G119","G68","G69","G67","G18","G37","G121","G63","G6","G40","G43","G49","G116","G59","G126","G17","G54"],"A":[1,30,3,2,14,28,4,82,6,5,11,53,7,10,66,8,57,20,9,19,65,12,67,33,13,50,27,15,18,32],"B":[1,2,11,6,3,45,15,4,8,7,5,66,31,9,24,82,10,40,52,12,35,20,13,71,22,16,64,19,17,46],"C":[2,17,1,6,93,3,7,15,4,18,8,5,30,39,9,57,14,10,12,76,11,50,23,13,88,73,16,37,40,19]},"columns":[{"accessor":".rownames","name":"","type":"character","sortable":false,"filterable":false},{"accessor":"A","name":"A","type":"numeric"},{"accessor":"B","name":"B","type":"numeric"},{"accessor":"C","name":"C","type":"numeric"}],"defaultPageSize":30,"paginationType":"numbers","showPageInfo":true,"minRows":1,"striped":true,"compact":true,"dataKey":"b794d2db5e5de8df651d07d558acfaa7"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0b5f186956d45c1349bb" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0b5f186956d45c1349bb">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["G52","G109","G115","G10","G148","G117","G71","G20","G44","G51","G25","G19","G12","G119","G68","G69","G67","G18","G37","G121","G63","G6","G40","G43","G49","G116","G59","G126","G17","G54"],"A":[1,30,3,2,14,28,4,82,6,5,11,53,7,10,66,8,57,20,9,19,65,12,67,33,13,50,27,15,18,32],"B":[1,2,11,6,3,45,15,4,8,7,5,66,31,9,24,82,10,40,52,12,35,20,13,71,22,16,64,19,17,46],"C":[2,17,1,6,93,3,7,15,4,18,8,5,30,39,9,57,14,10,12,76,11,50,23,13,88,73,16,37,40,19]},"columns":[{"accessor":".rownames","name":"","type":"character","sortable":false,"filterable":false},{"accessor":"A","name":"A","type":"numeric"},{"accessor":"B","name":"B","type":"numeric"},{"accessor":"C","name":"C","type":"numeric"}],"defaultPageSize":30,"paginationType":"numbers","showPageInfo":true,"minRows":1,"striped":true,"compact":true,"dataKey":"b794d2db5e5de8df651d07d558acfaa7"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
   </div>
 

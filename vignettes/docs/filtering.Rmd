@@ -42,10 +42,10 @@ head(rownames(toy))
 # Edit in zero variance in at least one subtype
 exprs(toy)["G2", toy$subtype == "A"] <- 0
 
-genes.filtered <- filter.var(toy, 
-                             column="subtype", 
-                             subtypes=c("A", "B", "C"), 
-                             fn=var)
+genes.filtered <- keep.var(toy, 
+                           column="subtype", 
+                           subtypes=c("A", "B", "C"), 
+                           fn=var)
 
 head(genes.filtered)
 ```
@@ -55,12 +55,12 @@ head(genes.filtered)
 Even after filtering, there still may be too many variables. One method to reduce the number of variables is to rank them by some favorable property and select the top *x* amount. When finding structural constraints, we rely on biweight midcorrelation which is more reliable when variables have a high median absolute deviation. Since there are multiple networks, we give each network an opportunity to contribute a high-ranking variable in a turn-based system until the limit has been reached.
 
 ```{r}
-genes.selected <- select.var(toy, 
-                             column="subtype",
-                             subtypes=c("A", "B", "C"), 
-                             limit=30, 
-                             genes=genes.filtered, 
-                             fn=mad)
+genes.selected <- rank.var(toy, 
+                           column="subtype",
+                           subtypes=c("A", "B", "C"), 
+                           limit=30, 
+                           genes=genes.filtered, 
+                           fn=mad)
 
 head(genes.selected)
 ```

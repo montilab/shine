@@ -1,6 +1,6 @@
 Package: shine
 Title: Bayesian Structure Learning for Hierarchical Networks
-Version: 0.0.02
+Version: 0.0.03
 Authors@R: c(person(given="Anthony", family="Federico", email="anfed@bu.edu", 
              role=c("aut", "cre"),
              comment = c(ORCID = "0000-0002-9200-1689")),

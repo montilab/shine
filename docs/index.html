@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
       </span>
     </div>
 
@@ -130,10 +130,10 @@
 <h3 class="hasAnchor">
 <a href="#variable-selection" class="anchor"></a>Variable Selection</h3>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Filter out non-varying genes</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>genes.filtered &lt;-<span class="st"> </span><span class="kw"><a href="reference/filter.var.html">filter.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
+<span id="cb8-2"><a href="#cb8-2"></a>genes.filtered &lt;-<span class="st"> </span><span class="kw"><a href="reference/keep.var.html">keep.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
 <span id="cb8-3"><a href="#cb8-3"></a></span>
 <span id="cb8-4"><a href="#cb8-4"></a><span class="co"># Select top genes by median absolute deviation</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a>genes.selected &lt;-<span class="st"> </span><span class="kw"><a href="reference/select.var.html">select.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), <span class="dt">genes=</span>genes.filtered, <span class="dt">limit=</span><span class="dv">150</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a>genes.selected &lt;-<span class="st"> </span><span class="kw"><a href="reference/rank.var.html">rank.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), <span class="dt">genes=</span>genes.filtered, <span class="dt">limit=</span><span class="dv">150</span>)</span>
 <span id="cb8-6"><a href="#cb8-6"></a></span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="co"># Subset toy dataset</span></span>
 <span id="cb8-8"><a href="#cb8-8"></a>eset &lt;-<span class="st"> </span>toy[genes.selected,]</span></code></pre></div>

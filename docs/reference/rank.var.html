@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Repeatable vector of distinct colors — rcolors • shine</title>
+<title>Rank variables by median absolute deviation across one or more subtypes — rank.var • shine</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Repeatable vector of distinct colors — rcolors" />
-<meta property="og:description" content="Repeatable vector of distinct colors" />
+<meta property="og:title" content="Rank variables by median absolute deviation across one or more subtypes — rank.var" />
+<meta property="og:description" content="Rank variables by median absolute deviation across one or more subtypes" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,23 +126,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Repeatable vector of distinct colors</h1>
+    <h1>Rank variables by median absolute deviation across one or more subtypes</h1>
     
-    <div class="hidden name"><code>rcolors.Rd</code></div>
+    <div class="hidden name"><code>rank.var.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Repeatable vector of distinct colors</p>
+    <p>Rank variables by median absolute deviation across one or more subtypes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rcolors</span>(<span class='kw'>reps</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>rank.var</span>(
+  <span class='no'>eset</span>,
+  <span class='no'>column</span>,
+  <span class='no'>subtypes</span>,
+  <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>2500</span>,
+  <span class='kw'>genes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>eset</span>),
+  <span class='kw'>fn</span> <span class='kw'>=</span> <span class='no'>mad</span>
+)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>eset</th>
+      <td><p>An expression set object</p></td>
+    </tr>
+    <tr>
+      <th>column</th>
+      <td><p>The column in pData where subtypes are described</p></td>
+    </tr>
+    <tr>
+      <th>subtypes</th>
+      <td><p>One or more unique subtypes</p></td>
+    </tr>
+    <tr>
+      <th>limit</th>
+      <td><p>Number of genes to select</p></td>
+    </tr>
+    <tr>
+      <th>genes</th>
+      <td><p>Allowed genes</p></td>
+    </tr>
+    <tr>
+      <th>fn</th>
+      <td><p>A function to rank variables by</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A vector of genes</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
 
   </div>

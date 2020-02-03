@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">shine</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
       </span>
     </div>
 
@@ -151,8 +151,8 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb10-6"><a href="#cb10-6"></a><span class="st">"</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a></span>
 <span id="cb10-8"><a href="#cb10-8"></a><span class="kw"><a href="../../reference/plt.hierarchy.html">plt.hierarchy</a></span>(hierarchy)</span></code></pre></div>
-<div id="htmlwidget-5aae0551ee46816c39e8" style="width:288px;height:96px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5aae0551ee46816c39e8">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA\nB\nC\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here we first learn the root network - combining samples from groups A, B, and C - and then use this network as a prior for learning each group individually.</p>
+<div id="htmlwidget-da97967325ba06c0b372" style="width:288px;height:96px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-da97967325ba06c0b372">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA\nB\nC\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here we first learn the root network - combining samples from groups A, B, and C - and then use this network as a prior for learning each group individually.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>condition &lt;-<span class="st"> "subtype"</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>hierarchy &lt;-<span class="st"> "</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="st">A_B_C -&gt; A</span></span>
@@ -161,8 +161,8 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb11-6"><a href="#cb11-6"></a><span class="st">"</span></span>
 <span id="cb11-7"><a href="#cb11-7"></a></span>
 <span id="cb11-8"><a href="#cb11-8"></a><span class="kw"><a href="../../reference/plt.hierarchy.html">plt.hierarchy</a></span>(hierarchy)</span></code></pre></div>
-<div id="htmlwidget-0142c3221fbe24156fa4" style="width:288px;height:192px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0142c3221fbe24156fa4">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A\nA_B_C -> B\nA_B_C -> C\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here is the same as previously, except there are internal nodes which are learned before dependent leaf nodes.</p>
+<div id="htmlwidget-746341e7021af9b66f8e" style="width:288px;height:192px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-746341e7021af9b66f8e">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A\nA_B_C -> B\nA_B_C -> C\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>Here is the same as previously, except there are internal nodes which are learned before dependent leaf nodes.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>condition &lt;-<span class="st"> "subtype"</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>hierarchy &lt;-<span class="st"> "</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="st">A_B_C -&gt; A_B</span></span>
@@ -172,18 +172,18 @@ docker pull docker.pkg.github.com/montilab/shine/workflow:latest</code></pre>
 <span id="cb12-7"><a href="#cb12-7"></a><span class="st">"</span></span>
 <span id="cb12-8"><a href="#cb12-8"></a></span>
 <span id="cb12-9"><a href="#cb12-9"></a><span class="kw"><a href="../../reference/plt.hierarchy.html">plt.hierarchy</a></span>(hierarchy)</span></code></pre></div>
-<div id="htmlwidget-1d872c41eb1c1ef85343" style="width:288px;height:288px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1d872c41eb1c1ef85343">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A_B\nA_B_C -> C\nA_B -> A\nA_B -> B\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4043379e29a658c7d18c" style="width:288px;height:288px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4043379e29a658c7d18c">{"x":{"diagram":"digraph dot {\n     graph [layout = dot]\n     node [shape = circle,\n           style = filled,\n           color = black,\n           style = filled,\n           fillcolor = AliceBlue,\n           fontname = Futura]\n     edge [color = black]\n     \nA_B_C -> A_B\nA_B_C -> C\nA_B -> A\nA_B -> B\n\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="filtering-and-constraints" class="section level1">
 <h1 class="hasAnchor">
 <a href="#filtering-and-constraints" class="anchor"></a>Filtering and Constraints</h1>
 <p>He we repeat methods detailed in previous sections for variable selection and complexity reduction.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Filter out non-varying genes</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>genes.filtered &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/filter.var.html">filter.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
+<span id="cb13-2"><a href="#cb13-2"></a>genes.filtered &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/keep.var.html">keep.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>))</span>
 <span id="cb13-3"><a href="#cb13-3"></a></span>
 <span id="cb13-4"><a href="#cb13-4"></a><span class="co"># Select top genes by median absolute deviation</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a>genes.selected &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/select.var.html">select.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), <span class="dt">genes=</span>genes.filtered, <span class="dt">limit=</span><span class="dv">150</span>)</span>
+<span id="cb13-5"><a href="#cb13-5"></a>genes.selected &lt;-<span class="st"> </span><span class="kw"><a href="../../reference/rank.var.html">rank.var</a></span>(toy, <span class="dt">column=</span><span class="st">"subtype"</span>, <span class="dt">subtypes=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), <span class="dt">genes=</span>genes.filtered, <span class="dt">limit=</span><span class="dv">150</span>)</span>
 <span id="cb13-6"><a href="#cb13-6"></a></span>
 <span id="cb13-7"><a href="#cb13-7"></a><span class="co"># Subset toy dataset</span></span>
 <span id="cb13-8"><a href="#cb13-8"></a>eset &lt;-<span class="st"> </span>toy[genes.selected,]</span>

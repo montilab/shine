@@ -46,19 +46,19 @@ pvector <- R6Class("pvector", list(
     }
 ))
 
-#' Filter variables with zero variance in one or more subtypes
+#' Keep variables with non-zero variance within subtypes
 #' 
 #' @param eset An expression set object
 #' @param column The column in pData where subtypes are described
 #' @param subtypes One or more unique subtypes
 #' @param fn A function required to be non-zero
 #' 
-#' @return A vector of filtered genes
+#' @return A vector of genes
 #' 
 #' @importFrom Biobase exprs pData
 #'  
 #' @export
-filter.var <- function(eset, column, subtypes, fn=var) {
+keep.var <- function(eset, column, subtypes, fn=var) {
     type <- Biobase::pData(eset)[,column]
     variable.genes <- list()
     for (i in subtypes) {
@@ -70,7 +70,7 @@ filter.var <- function(eset, column, subtypes, fn=var) {
     Reduce(intersect, variable.genes)
 }
 
-#' Select variables by median absolute deviation across one or more subtypes
+#' Rank variables by median absolute deviation across one or more subtypes
 #' 
 #' @param eset An expression set object
 #' @param column The column in pData where subtypes are described
@@ -79,12 +79,12 @@ filter.var <- function(eset, column, subtypes, fn=var) {
 #' @param genes Allowed genes
 #' @param fn A function to rank variables by
 #' 
-#' @return A vector of selected genes
+#' @return A vector of genes
 #' 
 #' @importFrom Biobase exprs pData
 #'  
 #' @export
-select.var <- function(eset, column, subtypes, limit=2500, genes=rownames(eset), fn=mad) {
+rank.var <- function(eset, column, subtypes, limit=2500, genes=rownames(eset), fn=mad) {
     type <- Biobase::pData(eset)[,column]
     ranked.genes <- list()
     for (i in subtypes) {

@@ -34,9 +34,6 @@
     <loc>https://github.com/montilab/shine/reference/eig.get.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/filter.var.html</loc>
-  </url>
-  <url>
     <loc>https://github.com/montilab/shine/reference/fuzzy.mods.html</loc>
   </url>
   <url>
@@ -44,6 +41,9 @@
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/fuzzy.predict.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/montilab/shine/reference/keep.var.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/me.get.html</loc>
@@ -115,10 +115,10 @@
     <loc>https://github.com/montilab/shine/reference/pvector.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/rcolors.html</loc>
+    <loc>https://github.com/montilab/shine/reference/rank.var.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/select.var.html</loc>
+    <loc>https://github.com/montilab/shine/reference/rcolors.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/sft.check.html</loc>

@@ -57,10 +57,10 @@ table(toy$subtype)
 ### Variable Selection
 ```{r}
 # Filter out non-varying genes
-genes.filtered <- filter.var(toy, column="subtype", subtypes=c("A", "B", "C"))
+genes.filtered <- keep.var(toy, column="subtype", subtypes=c("A", "B", "C"))
 
 # Select top genes by median absolute deviation
-genes.selected <- select.var(toy, column="subtype", subtypes=c("A", "B", "C"), genes=genes.filtered, limit=150)
+genes.selected <- rank.var(toy, column="subtype", subtypes=c("A", "B", "C"), genes=genes.filtered, limit=150)
 
 # Subset toy dataset
 eset <- toy[genes.selected,]

@@ -415,7 +415,7 @@ fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
             
     ggplot(df, aes(x=MM1, y=MM2)) +
     geom_tile(data=mat, aes(x=x, y=y, fill=posterior), alpha=0.90) +
-    scale_fill_gradient(low="#FFFFFF", high="#A7226E") +
+    scale_fill_gradient(low="#FFF9F1", high="#BACBD2") +
     geom_point(size=size, aes(color=status)) +
     scale_color_manual(values=memberships) + 
     theme_classic() +

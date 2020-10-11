@@ -227,3 +227,4 @@ temp
 gradle.properties
 .dockerignore
 .launch.classpath
+.Rproj.user

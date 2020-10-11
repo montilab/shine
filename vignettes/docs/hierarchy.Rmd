@@ -11,7 +11,7 @@ knitr::opts_chunk$set(comment="", cache=FALSE)
 devtools::load_all(".")
 ```
 
-Due to the heavy computational requirements for high-dimensional graphical modeling, we learn network hierarchies in paralell on high performance computing platforms. Because some networks are dependent on others (e.g. A network is used as a prior in learning another) we need a reactive workflow to handle all of the processes.
+Due to the heavy computational requirements for high-dimensional graphical modeling, we learn network hierarchies in parallel on high performance computing platforms. Because some networks are dependent on others (e.g. A network is used as a prior in learning another) we need a reactive workflow to handle all of the processes.
 
 We provide a function for generating [Nextflow](https://www.nextflow.io/) workflows based on your hierarchy. Using Nextflow in this way enables the deployment of flexible and reactive workflows on various high performance computing platforms. This not only simplifies the process of estimating network hierarchies on different cloud/cluster architectures, but it also makes your results reproducible.
 

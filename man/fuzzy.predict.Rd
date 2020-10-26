@@ -4,7 +4,7 @@
 \alias{fuzzy.predict}
 \title{Classify fuzzy membership for a module with quadratic discriminant analysis}
 \usage{
-fuzzy.predict(dat, mods, mod, fn = bicor)
+fuzzy.predict(dat, mods, mod, p = 0.5, fn = bicor)
 }
 \arguments{
 \item{dat}{Expression data}
@@ -12,6 +12,8 @@ fuzzy.predict(dat, mods, mod, fn = bicor)
 \item{mods}{A list of modules}
 
 \item{mod}{A module name}
+
+\item{p}{Posterior probability threshold}
 
 \item{fn}{A correlation function}
 }

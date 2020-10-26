@@ -4,7 +4,7 @@
 \alias{fuzzy.plot}
 \title{Visualize fuzzy module classification}
 \usage{
-fuzzy.plot(dat, mods, mod, size = 2.5, resolution = 100, fn = bicor)
+fuzzy.plot(dat, mods, mod, p = 0.5, fn = bicor, size = 2.5, resolution = 100)
 }
 \arguments{
 \item{dat}{Expression data}
@@ -13,11 +13,13 @@ fuzzy.plot(dat, mods, mod, size = 2.5, resolution = 100, fn = bicor)
 
 \item{mod}{A module name}
 
+\item{p}{Posterior probability threshold}
+
+\item{fn}{A correlation function}
+
 \item{size}{Size of data points}
 
 \item{resolution}{Resolution of heatmap}
-
-\item{fn}{A correlation function}
 }
 \value{
 A ggplot object

@@ -4,7 +4,7 @@
 \alias{fuzzy.mods}
 \title{Classify fuzzy modules with quadratic disciminant analysis}
 \usage{
-fuzzy.mods(dat, mods, cores = 1, fn = bicor)
+fuzzy.mods(dat, mods, cores = 1, p = 0.5, fn = bicor)
 }
 \arguments{
 \item{dat}{Expression data}
@@ -12,6 +12,8 @@ fuzzy.mods(dat, mods, cores = 1, fn = bicor)
 \item{mods}{A list of modules}
 
 \item{cores}{The number of cores for parallel execution}
+
+\item{p}{Posterior probability threshold}
 
 \item{fn}{A correlation function}
 }

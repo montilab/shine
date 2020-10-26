@@ -336,17 +336,19 @@ mods.plot <- function(dat, mods, colors, size=1, ncol=round(sqrt(length(mods))),
 #' @param dat Expression data
 #' @param mods A list of modules
 #' @param mod A module name
+#' @param p Posterior probability threshold
 #' @param fn A correlation function
 #' 
 #' @return The model and a dataframe of classifications
 #' 
 #' @import ggplot2
 #' @importFrom dplyr %>% mutate
+#' @importFrom magrittr set_colnames
 #' @importFrom reshape2 melt
 #' @importFrom MASS qda
 #' 
 #' @export
-fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
+fuzzy.predict <- function(dat, mods, mod, p=0.5, fn=bicor) {
 
     mm.1 <- mm.get(dat, mods, k=1, fn=fn)
     mm.2 <- mm.get(dat, mods, k=2, fn=fn)    
@@ -360,8 +362,9 @@ fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
     dat <- data[,c("MM1", "MM2", "membership")]
     model <- MASS::qda(membership ~ ., data=dat, prior=c(0.5, 0.5))
     predictions <- predict(model, dat, type="class")
-    df <- cbind(data, predictions$posterior[,"1"], predictions$class)
-    colnames(df) <- c("MM1", "MM2", "gene", "membership", "posterior", "prediction")
+    df <- cbind(data, predictions$posterior[,"1"]) %>%
+          magrittr::set_colnames(c("MM1", "MM2", "gene", "membership", "posterior")) %>%
+          dplyr::mutate(prediction = ifelse(posterior >= p, 1, 0))
     
     return(list(df=df, model=model))
 }
@@ -371,9 +374,10 @@ fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
 #' @param dat Expression data
 #' @param mods A list of modules
 #' @param mod A module name
+#' @param p Posterior probability threshold
+#' @param fn A correlation function
 #' @param size Size of data points
 #' @param resolution Resolution of heatmap
-#' @param fn A correlation function
 #' 
 #' @return A ggplot object
 #' 
@@ -381,9 +385,9 @@ fuzzy.predict <- function(dat, mods, mod, fn=bicor) {
 #' @importFrom dplyr %>% mutate case_when
 #' 
 #' @export
-fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
+fuzzy.plot <- function(dat, mods, mod, p=0.5, fn=bicor, size=2.5, resolution=100) {
     
-    fp <- fuzzy.predict(dat, mods, mod, fn=fn)
+    fp <- fuzzy.predict(dat, mods, mod, p, fn)
     
     # Extract model and data
     df <- fp$df
@@ -419,7 +423,27 @@ fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
     geom_point(size=size, aes(color=status)) +
     scale_color_manual(values=memberships) + 
     theme_classic() +
-    ggtitle(mod)
+    labs(title=mod, fill="Posterior", color="")
+}
+
+#' Visualize multiple fuzzy module classifications
+#' 
+#' @param dat Expression data
+#' @param mods A list of modules
+#' @param ... Additional arguments passed to /code{shine::fuzzy.plot}
+#' 
+#' @return A ggplot object
+#' 
+#' @import ggplot2
+#' @import ggpubr
+#' 
+#' @export
+fuzzy.plots <- function(dat, mods, ...) {
+    mapply(function(mod) {
+        fuzzy.plot(dat, mods, mod, ...) +
+            theme(legend.position="none")
+    }, names(mods), SIMPLIFY=FALSE) %>%
+    ggarrange(plotlist=.)
 }
 
 #' Classify fuzzy modules with quadratic disciminant analysis
@@ -427,6 +451,7 @@ fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
 #' @param dat Expression data
 #' @param mods A list of modules
 #' @param cores The number of cores for parallel execution
+#' @param p Posterior probability threshold
 #' @param fn A correlation function
 #' 
 #' @return A list of fuzzy modules
@@ -435,11 +460,11 @@ fuzzy.plot <- function(dat, mods, mod, size=2.5, resolution=100, fn=bicor) {
 #' @importFrom parallel mcmapply
 #' 
 #' @export
-fuzzy.mods <- function(dat, mods, cores=1, fn=bicor) {
+fuzzy.mods <- function(dat, mods, cores=1, p=0.5, fn=bicor) {
     
     mcmapply(function(mod.name, mod.members) {
         
-        fp <- fuzzy.predict(dat, mods, mod=mod.name, fn=fn)
+        fp <- fuzzy.predict(dat, mods, mod=mod.name, p=p, fn=fn)
         fuzzy.members <- fp$df %>%
                          dplyr::filter(prediction == 1) %>%
                          dplyr::pull(gene)

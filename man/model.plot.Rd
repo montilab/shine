@@ -4,14 +4,27 @@
 \alias{model.plot}
 \title{Plot model}
 \usage{
-model.plot(ig, seed = 1, colors = FALSE)
+model.plot(
+  ig,
+  seed = 1,
+  vertex.size = 4,
+  vertex.label = NA,
+  colors = FALSE,
+  ...
+)
 }
 \arguments{
 \item{ig}{An igraph object}
 
 \item{seed}{A number to seed random layouts}
 
+\item{vertex.size}{Vertex size(s)}
+
+\item{vertex.label}{Vertex labels(s)}
+
 \item{colors}{Use true to include vertex colors in plot}
+
+\item{...}{Additional arguments passed to /code{igraph::plot}}
 }
 \value{
 A graph visualization

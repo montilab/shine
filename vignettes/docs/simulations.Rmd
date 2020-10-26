@@ -2,8 +2,10 @@
 title: "Network Simulation"
 vignette: >
   %\VignetteIndexEntry{Network Simulation}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include=FALSE, message=FALSE, warning=FALSE}
@@ -60,15 +62,24 @@ model.plot(g)
 Perhaps the simplest model is the [Erdős–Rényi model](https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model) for generating random graphs. Through this algorithm, nodes are initalized and edges are drawn arbitrarily at a given probability.
 
 ```{r}
-g <- model.er(100)
+g <- model.er(100, 0.05)
 model.plot(g)
 ```
 
 ## Modular Structures
 
+### Modular Preferential Attachment
+
 ```{r}
 g <- model.mpa(200)
 model.plot(g, colors=TRUE)
+```
+
+### Lancichinetti–Fortunato–Radicchi Benchmark
+
+```{r}
+
+
 ```
 
 # Multiple Networks

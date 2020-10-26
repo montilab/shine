@@ -1,3 +1,36 @@
+#' Spring-embedded layout
+#' 
+#' @param ig An igraph object
+#' 
+#' @return A graph layout_with_graphopt
+#' 
+#' @keywords internal
+model.layout <- function(ig) {
+    igraph::layout_with_graphopt(ig, 
+                                 start=NULL, 
+                                 niter=500,
+                                 charge=0.001,
+                                 mass=30, 
+                                 spring.length=0,
+                                 spring.constant=1, 
+                                 max.sa.movement=5)
+}
+
+#' Removes loops, multi-edges, and isolated vertices from graph
+#' 
+#' @param ig An igraph object
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph simplify delete_vertices degree
+#' 
+#' @keywords internal
+model.simplify <- function(ig) {
+    ig <- igraph::simplify(ig, remove.multiple=TRUE, remove.loops=TRUE)
+    ig <- igraph::delete_vertices(ig, which(igraph::degree(ig) == 0))
+    return(ig)
+}
+
 #' Get a string-representation of igraph edges
 #' 
 #' @param ig An igraph object
@@ -250,28 +283,77 @@ model.er <- function(p=300, e.prob=0.01, ...) {
                        ...)
 }
 
+#' Simulate network via lancichinetti–fortunato–radicchi benchmark
+#' 
+#' @param n Number of nodes in the created graph
+#' @param tau1 Power law exponent for the degree distribution [> 1]
+#' @param tau2 Power law exponent for the community size distribution in the created graph [> 1]
+#' @param mu Fraction of intra-community edges incident to each node [0, 1]
+#' @param average_degree Average degree of nodes [0, n]
+#' @param min_community Minimum size of communities in the graph
+#' @param max_community Maximum size of communities in the graph
+#' @param seed Set a seed
+#' @param rpy Optionally set a specific python path for reticulate to use
+#' 
+#' @param ... Additional arguments passed to /code{LFR}
+#' 
+#' @return An igraph object
+#' 
+#' @importFrom igraph graph_from_adjacency_matrix
+#' @importFrom reticulate import_from_path
+#' 
+#' @export
+model.lfr <- function(n=100, tau1=3, tau2=2, mu=0.1, average_degree=5, min_community=5, max_community=30, seed=1, rpy=NULL, ...){
+    if (!is.null(rpy)) {
+        Sys.setenv(RETICULATE_PYTHON=rpy)
+    }
+
+    models <- reticulate::import_from_path("models", system.file("python", package="shine"))
+
+    adj <- models$LFR(seed,
+                      n=n, 
+                      tau1=tau1, 
+                      tau2=tau2, 
+                      mu=mu, 
+                      average_degree=average_degree, 
+                      min_community=min_community, 
+                      max_community=max_community,
+                      ...)
+    
+    ig <- igraph::graph_from_adjacency_matrix(adj, mode="undirected", diag=FALSE)
+    ig <- model.simplify(ig)
+    return(ig)
+}
+
 #' Plot model
 #' 
 #' @param ig An igraph object
 #' @param seed A number to seed random layouts
+#' @param vertex.size Vertex size(s)
+#' @param vertex.label Vertex labels(s)
 #' @param colors Use true to include vertex colors in plot
+#' @param ... Additional arguments passed to /code{igraph::plot}
 #' 
 #' @return A graph visualization
 #' 
 #' @export
-model.plot <- function(ig, seed=1, colors=FALSE) {
+model.plot <- function(ig, seed=1, vertex.size=4, vertex.label=NA, colors=FALSE, ...) {
     set.seed(seed)
     if (colors) {
         plot(ig, 
-            vertex.size=4, 
-            vertex.label=NA)
+             vertex.size=vertex.size, 
+             vertex.label=vertex.label,
+             layout=model.layout(ig),
+             ...)
     } 
     else {
         plot(ig, 
-            vertex.size=4, 
-            vertex.color="grey",
-            edge.color="black", 
-            vertex.label=NA)
+             vertex.size=vertex.size,
+             vertex.label=vertex.label,
+             vertex.color="grey",
+             edge.color="black", 
+             layout=model.layout(ig),
+             ...)
     }
 }
 
@@ -290,7 +372,7 @@ models.plot <- function(igs) {
         igraph::E(ig)$width <- 2
         igraph::E(ig)$color <- "#FC4840" # blue
         igraph::E(ig)$color[model.edges(ig) %in% shared] <- "#113D5C" # red
-        plot(ig, vertex.size=4, vertex.color="grey", vertex.label=NA)
+        plot(ig, vertex.size=4, vertex.color="grey", vertex.label=NA, layout=model.layout(ig))
     }
 }
 

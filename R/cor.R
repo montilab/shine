@@ -42,6 +42,7 @@ sft.check <- function(sft) {
 #' @param eset An expression set object
 #' @param min.size Minimum module size
 #' @param min.sft Minimum acceptable scale-free fit when choosing soft threshold
+#' @param beta Override soft thresholding choice
 #' @param cores Number of cpus to use
 #' @param cor.fn Method for calculation co-expression similarity
 #' @param powers A vector of values to test for soft thresholding
@@ -61,6 +62,7 @@ sft.check <- function(sft) {
 mods.detect <- function(eset,
                         min.size=10, 
                         min.sft=0.85, 
+                        beta=NULL,
                         cores=1,
                         cor.fn=c("bicor", "cor"),
                         powers=c(seq(1, 10, by = 1), seq(12, 20, by = 2)),
@@ -83,15 +85,17 @@ mods.detect <- function(eset,
     dat <- t(Biobase::exprs(eset))
     
     # Pick soft threshold via scale-free fit
-    sft <- WGCNA::pickSoftThreshold(data=dat, 
-                                    corFnc=cor.fn, 
-                                    RsquaredCut=min.sft, 
-                                    powerVector=powers)
-    
-    if (do.plot) sft.plot(sft, powers)
-    
-    # Check selected power
-    beta <- sft.check(sft)
+    if (is.null(beta)) {
+        sft <- WGCNA::pickSoftThreshold(data=dat, 
+                                        corFnc=cor.fn, 
+                                        RsquaredCut=min.sft, 
+                                        powerVector=powers)
+        
+        if (do.plot) sft.plot(sft, powers)
+        
+        # Check selected power
+        beta <- sft.check(sft)
+    }
     
     # Construct co-expression similarity
     adj <- WGCNA::adjacency(datExpr=dat, 

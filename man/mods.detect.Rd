@@ -8,6 +8,7 @@ mods.detect(
   eset,
   min.size = 10,
   min.sft = 0.85,
+  beta = NULL,
   cores = 1,
   cor.fn = c("bicor", "cor"),
   powers = c(seq(1, 10, by = 1), seq(12, 20, by = 2)),
@@ -22,6 +23,8 @@ mods.detect(
 \item{min.size}{Minimum module size}
 
 \item{min.sft}{Minimum acceptable scale-free fit when choosing soft threshold}
+
+\item{beta}{Override soft thresholding choice}
 
 \item{cores}{Number of cpus to use}
 

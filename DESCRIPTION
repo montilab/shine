@@ -18,7 +18,6 @@ Imports:
     MASS,
     R6,
     ggplot2,
-    ggpubr,
     flashClust,
     dynamicTreeCut,
     stringr,
@@ -27,7 +26,6 @@ Imports:
     scales,
     dplyr,
     magrittr,
-    reticulate
 Suggests:
     devtools,
     testthat,

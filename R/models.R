@@ -283,48 +283,6 @@ model.er <- function(p=300, e.prob=0.01, ...) {
                        ...)
 }
 
-#' Simulate network via lancichinetti–fortunato–radicchi benchmark
-#' 
-#' @param n Number of nodes in the created graph
-#' @param tau1 Power law exponent for the degree distribution [> 1]
-#' @param tau2 Power law exponent for the community size distribution in the created graph [> 1]
-#' @param mu Fraction of intra-community edges incident to each node [0, 1]
-#' @param average_degree Average degree of nodes [0, n]
-#' @param min_community Minimum size of communities in the graph
-#' @param max_community Maximum size of communities in the graph
-#' @param seed Set a seed
-#' @param rpy Optionally set a specific python path for reticulate to use
-#' 
-#' @param ... Additional arguments passed to /code{LFR}
-#' 
-#' @return An igraph object
-#' 
-#' @importFrom igraph graph_from_adjacency_matrix
-#' @importFrom reticulate import_from_path
-#' 
-#' @export
-model.lfr <- function(n=100, tau1=3, tau2=2, mu=0.1, average_degree=5, min_community=5, max_community=30, seed=1, rpy=NULL, ...) {
-    if (!is.null(rpy)) {
-        Sys.setenv(RETICULATE_PYTHON=rpy)
-    }
-
-    models <- reticulate::import_from_path("models", system.file("python", package="shine"))
-
-    adj <- models$LFR(seed,
-                      n=n, 
-                      tau1=tau1, 
-                      tau2=tau2, 
-                      mu=mu, 
-                      average_degree=average_degree, 
-                      min_community=min_community, 
-                      max_community=max_community,
-                      ...)
-    
-    ig <- igraph::graph_from_adjacency_matrix(adj, mode="undirected", diag=FALSE)
-    ig <- model.simplify(ig)
-    return(ig)
-}
-
 #' Plot model
 #' 
 #' @param ig An igraph object

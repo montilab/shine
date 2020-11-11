@@ -430,26 +430,6 @@ fuzzy.plot <- function(dat, mods, mod, p=0.5, fn=bicor, size=2.5, resolution=100
     labs(title=mod, fill="Posterior", color="")
 }
 
-#' Visualize multiple fuzzy module classifications
-#' 
-#' @param dat Expression data
-#' @param mods A list of modules
-#' @param ... Additional arguments passed to /code{shine::fuzzy.plot}
-#' 
-#' @return A ggplot object
-#' 
-#' @import ggplot2
-#' @import ggpubr
-#' 
-#' @export
-fuzzy.plots <- function(dat, mods, ...) {
-    mapply(function(mod) {
-        fuzzy.plot(dat, mods, mod, ...) +
-            theme(legend.position="none")
-    }, names(mods), SIMPLIFY=FALSE) %>%
-    ggarrange(plotlist=.)
-}
-
 #' Classify fuzzy modules with quadratic disciminant analysis
 #' 
 #' @param dat Expression data

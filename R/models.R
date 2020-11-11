@@ -303,7 +303,7 @@ model.er <- function(p=300, e.prob=0.01, ...) {
 #' @importFrom reticulate import_from_path
 #' 
 #' @export
-model.lfr <- function(n=100, tau1=3, tau2=2, mu=0.1, average_degree=5, min_community=5, max_community=30, seed=1, rpy=NULL, ...){
+model.lfr <- function(n=100, tau1=3, tau2=2, mu=0.1, average_degree=5, min_community=5, max_community=30, seed=1, rpy=NULL, ...) {
     if (!is.null(rpy)) {
         Sys.setenv(RETICULATE_PYTHON=rpy)
     }

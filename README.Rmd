@@ -13,7 +13,6 @@ devtools::load_all(".")
 
 [![](https://img.shields.io/badge/platforms-linux%20%7C%20osx%20-2a89a1.svg)]()
 [![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-[![Built With](https://img.shields.io/badge/Built%20With-Nextflow-brightgreen.svg)](https://www.nextflow.io/)
 [![](https://img.shields.io/github/last-commit/montilab/shine.svg)](https://github.com/montilab/shine/commits/master)
 
 Bayesian **S**tructure Learning for **Hi**erarchical **Ne**tworks  

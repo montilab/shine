@@ -2,7 +2,7 @@
 % Please edit documentation in R/models.R
 \name{model.sim}
 \alias{model.sim}
-\title{Simulate multivariate gaussian data for a model}
+\title{Simulate multivariate Gaussian data for a model}
 \usage{
 model.sim(n, ig, seed = 1)
 }
@@ -17,5 +17,5 @@ model.sim(n, ig, seed = 1)
 The true graph structure and multivariate gaussian data
 }
 \description{
-Simulate multivariate gaussian data for a model
+Simulate multivariate Gaussian data for a model
 }

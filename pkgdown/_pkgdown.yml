@@ -26,6 +26,8 @@ reference:
   - '`model.hpa`'
   - '`model.kd`'
   - '`model.sim`'
+  - '`model.layout`'
+  - '`model.simplify`'
   - '`model.plot`'
   - '`models.plot`'
   - '`model.similarity`'
@@ -47,7 +49,7 @@ reference:
   - '`fuzzy.mods`'
   - '`fuzzy.plot`'
   - '`fuzzy.predict`'
-- title: Estimation
+- title: Learning
   desc: ~
   contents:
   - '`bdg.estimate`'
@@ -57,11 +59,6 @@ reference:
   - '`blanket.lift`'
   - '`blanket.cred`'
   - '`blanket.inform`'
-- title: Hierarchy
-  desc: ~
-  contents:
-  - '`plt.hierarchy`'
-  - '`build.workflow`'
 - title: Datasets
   desc: ~
   contents:
@@ -78,12 +75,10 @@ navbar:
         href: articles/docs/simulations.html
       - text: "Filtering Methods"
         href: articles/docs/filtering.html
-      - text: "Structure Learning Constraints"
+      - text: "Structure Constraints"
         href: articles/docs/constraints.html
-      - text: "Hierarchical Networks"
-        href: articles/docs/hierarchy.html
-      - text: "Network Visualization"
-        href: articles/docs/netviz.html
+      - text: "Network Learning"
+        href: articles/docs/learning.html
     - text: "Functionality"
       href: reference/index.html
   right:

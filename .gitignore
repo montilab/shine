@@ -1,5 +1,6 @@
 dev
 media
+inst/scripts
 
 # General
 .DS_Store

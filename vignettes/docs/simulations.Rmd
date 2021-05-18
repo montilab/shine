@@ -15,7 +15,7 @@ devtools::load_all(".")
 
 # A Single Network
 
-When learning networks, it may be useful to test your algorithm on simulated data. To help with this, we provide some useful functions for simulating undirected networks through different modeling approaches relevant to biological networks.
+When learning networks, it may be useful to test different methods on simulated data. To help with this, we provide some useful functions for simulating undirected networks through different modeling approaches relevant to biological networks.
 
 ## Flat Structures
 
@@ -70,16 +70,45 @@ model.plot(g)
 
 ### Modular Preferential Attachment
 
+Here is an extension of the preferential attachment algorithm where multiple scale-free models are randomly connected to simulate networks that have both modular and scale-free properties which are recognized in biological networks.
+
+
 ```{r}
 g <- model.mpa(200)
-model.plot(g, colors=TRUE)
+model.plot(g)
 ```
 
 ### Lancichinetti–Fortunato–Radicchi Benchmark
 
+For a more robust approach to generating modular scale-free networks, we use the [LFR model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.LFR_benchmark_graph.html#networkx.generators.community.LFR_benchmark_graph) to generate scale-free networks (degree distribution follows a power law) and also contain a modularity component (high clustering coefficient). These are two important structural properties observed in real biological networks. The most robust implementation of LFR is written in python via the `networkx` package.
+
+This can be installed and used as follows..
+
+```bash
+pip install networkx
+pip install numpy
+pip install scipy
+```
+
+```python
+import networkx as nx
+from networkx.generators.community import LFR_benchmark_graph
+
+G = LFR_benchmark_graph(n=500,
+                        tau1=2.7,
+                        tau2=2,
+                        mu=0.09,
+                        max_iters=250,
+                        average_degree=5,
+                        min_community=10,
+                        max_community=50,
+                        seed=1,
+                        **kwargs)
+```
+
 ```{r}
-
-
+g <- readRDS(file.path(system.file("extdata", package="shine"), "models.rds"))
+model.plot(g)
 ```
 
 # Multiple Networks
@@ -105,6 +134,8 @@ percent(models.similarity(graphs))
 ```
 
 # Generating Data
+
+We can use any of the models to simulate expression data that follows a multivariate Gaussian distribution, which is formatted as an Expression Set object, which is the primary input to downstream functions.
 
 ```{r}
 g <- model.pa(100, power=1.3)

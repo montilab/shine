@@ -13,7 +13,7 @@ library(magrittr)
 devtools::load_all(".")
 ```
 
-There is always a limit to the number of variables that can be used in high-dimensional graphical modeling. This is typically determined by the number of samples available as well as the methodology. Therefore, we typically need to filter out genes due some failure to meet a requirement or select genes based on favorable property. We provide some useful functions for variable filtering and selection that take consider multiple networks.
+There is always a limit to the number of variables that can be used in high-dimensional graphical modeling. This is typically determined by the number of samples available as well as the methodology. In some cases, it may be suitable to build networks on curated genes of interest. In other cases we may need to to filter out genes due some failure to meet a requirement or select genes based on favorable property. We provide some useful functions for variable filtering and selection that consider multiple networks.
 
 ```{r, eval=FALSE}
 library(shine)

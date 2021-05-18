@@ -15,8 +15,8 @@ devtools::load_all(".")
 [![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![](https://img.shields.io/github/last-commit/montilab/shine.svg)](https://github.com/montilab/shine/commits/master)
 
-Bayesian **S**tructure Learning for **Hi**erarchical **Ne**tworks  
-*A package to aid in the Bayesian estimation of hierarchical biological regulatory networks via Gaussian graphical modeling*
+**S**tructure Learning for **Hi**erarchical **Ne**tworks  
+*A package to aid in structure learning for hierarchical biological regulatory networks*
 
 ## Documentation
 
@@ -24,9 +24,7 @@ Please visit https://montilab.github.io/shine/ for comprehensive documentation.
 
 ## Requirements
 
-We suggest R 3.6.0 but R (>= 3.5.0) is required to install directly from Github. For workflows, you will need Python (>= 2.7.0) and dependencies for [Nextflow](https://www.nextflow.io/).  
-
-Nextflow can be used on any POSIX compatible system (Linux, OS X, etc) and requires BASH and Java 8 (or higher) to be installed. Alternatively, check out usage with Docker.
+We suggest R 3.6.0 but R (>= 3.5.0) is required to install directly from Github. For workflows, you will need Python (>= 2.7.0) and dependencies for [Nextflow](https://www.nextflow.io/). Nextflow can be used on any POSIX compatible system (Linux, OS X, etc) and requires BASH and Java 8 (or higher) to be installed. Alternatively, check out usage with Docker.
 
 ## Installation
 
@@ -36,16 +34,22 @@ Install the development version of the package from Github.
 devtools::install_github("montilab/shine")
 ```
 
-## Basic Overview
-
 ```{r, eval=FALSE}
 library(shine)
 ```
 
-### Example Data
+## Quick Example
+
 ```{r}
-# Toy expression set object
 data(toy)
+```
+
+```
+    ABC
+    / \
+   AB  \ 
+  /  \  \
+ A    B  C 
 ```
 
 ```{r}
@@ -59,79 +63,139 @@ table(toy$subtype)
 genes.filtered <- keep.var(toy, column="subtype", subtypes=c("A", "B", "C"))
 
 # Select top genes by median absolute deviation
-genes.selected <- rank.var(toy, column="subtype", subtypes=c("A", "B", "C"), genes=genes.filtered, limit=150)
+genes.selected <- rank.var(toy, column="subtype", subtypes=c("A", "B", "C"), genes=genes.filtered, limit=75)
 
 # Subset toy dataset
 eset <- toy[genes.selected,]
 ```
 
-### Structural Constraints
+### Structure Constraints
 ```{r, results='hide'}
-# Find constraints for structure with zero-order correlations
-wgcna <- mods.detect(eset, min.size=5, cores=3, do.plot=FALSE)
-metanet <- bdg.metanet(wgcna$eigengenes, cut=0.5, mpl=TRUE, iter=20000, cores=3)
-
-# Set constraints
-blanket <- blanket.new(wgcna$genes)
-blanket <- blanket.lift(blanket, wgcna$mods, metanet$edges)
+# Detect modules
+wgcna <- mods.detect(eset, min.size=5, cor.fn="cor", do.plot=FALSE)
 ```
 
-### Hierarchical Network Workflows
-```{r, eval=FALSE}
-condition <- "subtype"
-
-# Learn networks as a hierarchy
-hierarchy <- "
-A_B_C -> A_B
-A_B_C -> C
-A_B -> A
-A_B -> B
-"
-
-# Generate workflow
-build.workflow(hierarchy,
-               condition,
-               eset,
-               blanket,
-               iter=10000,
-               cores=3)
+```{r}
+# Module membership
+mods.plot(wgcna$dat, wgcna$mods, wgcna$colors, ncol=3, size=2.5)
 ```
+
+```{r}
+# Module extension
+mods.extended <- fuzzy.mods(wgcna$dat, wgcna$mods, p=0.75)
+mods.extended$grey <- NULL
+mods <- sort(sapply(wgcna$mods, length), decreasing=TRUE)
+print(mods)
+sapply(mods.extended, length)[names(mods)]
+```
+
+### Network Estimation
 
 ```bash
-./nextflow workflow.nf -c workflow.config -profile local
+$ curl -s https://get.nextflow.io | bash
 ```
 
-```md
-N E X T F L O W  ~  version 19.10.0
-Launching `workflow.nf` [mad_northcutt] - revision: e7aff2bf48
--
-W O R K F L O W ~ Configuration
-===============================
-data      : /Users/anthonyfederico/Downloads/nextflow/data/data.rds
-output    : /Users/anthonyfederico/Downloads/nextflow
--------------------------------
+--
+*Hint*
+Once downloaded make the `nextflow` file accessible by your $PATH variable so you do not have to specify the full path to nextflow each time. e.g. `nextflow run` rather than `path/to/nextflow run`
+--
 
-Hierarchy
-A_B_C -> A_B
-A_B_C -> C
-A_B -> A
-A_B -> B
+**Clone**
+*See full documentation for [shine-nf](https://github.com/montilab/shine-nf).*
+```bash
+$ git clone https://github.com/montilab/shine-nf
+```
 
--
+**Docker**  
+```bash
+$ docker pull montilab/shine:latest
+```
 
-executor >  local (5)
-[4d/715ff1] process > A_B_C [100%] 1 of 1 ✔
-[87/c2d03b] process > C     [100%] 1 of 1 ✔
-[6b/544fdd] process > A_B   [100%] 1 of 1 ✔
-[96/916564] process > A     [100%] 1 of 1 ✔
-[43/c599d4] process > B     [100%] 1 of 1 ✔
+**Hierarchy**  
 
-Completed at: 24-Dec-2019 23:01:05
-Duration    : 1m 45s
+
+[![](https://mermaid.ink/img/eyJjb2RlIjoiJSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3NlY3VyaXR5TGV2ZWwnOiAnbG9vc2UnLCAndGhlbWVWYXJpYWJsZXMnOiB7ICdwcmltYXJ5Q29sb3InOiAnIzc4NjhlNjQwJywgJ2VkZ2VMYWJlbEJhY2tncm91bmQnOicjZmZmZmZmJywgJ3RlcnRpYXJ5Q29sb3InOiAnI2Y0ZjRmNCd9fX0lJVxuXG5ncmFwaCBURFxuICAgIFNDe3tDb25zdHJhaW50c319IC0tPiB8TGVhcm58IEFCQyhcIkFCQyA8YnIvPiBuPTMwXCIpXG4gICAgQUJDIC0uLT4gfFByaW9yIExlYXJufCBBQltcIkFCIDxici8-IG49MjBcIl1cbiAgICBBQiAtLi0-IHxQcmlvciBMZWFybnwgQVtcIkEgPGJyLz4gbj0xMFwiXVxuICAgIEFCIC0uLT4gfFByaW9yIExlYXJufCBCW1wiQiA8YnIvPiBuPTEwXCJdXG4gICAgQUJDIC0uLT4gfFByaW9yIExlYXJufCBDW1wiQyA8YnIvPiBuPTEwXCJdXG4gIFxuICAgIHN1YmdyYXBoIFwiIFwiXG4gICAgQVxuICAgIEJcbiAgICBDXG4gICAgZW5kXG4iLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ)](https://mermaid-js.github.io/mermaid-live-editor/#/edit/eyJjb2RlIjoiJSV7aW5pdDogeyd0aGVtZSc6ICdiYXNlJywgJ3NlY3VyaXR5TGV2ZWwnOiAnbG9vc2UnLCAndGhlbWVWYXJpYWJsZXMnOiB7ICdwcmltYXJ5Q29sb3InOiAnIzc4NjhlNjQwJywgJ2VkZ2VMYWJlbEJhY2tncm91bmQnOicjZmZmZmZmJywgJ3RlcnRpYXJ5Q29sb3InOiAnI2Y0ZjRmNCd9fX0lJVxuXG5ncmFwaCBURFxuICAgIFNDe3tDb25zdHJhaW50c319IC0tPiB8TGVhcm58IEFCQyhcIkFCQyA8YnIvPiBuPTMwXCIpXG4gICAgQUJDIC0uLT4gfFByaW9yIExlYXJufCBBQltcIkFCIDxici8-IG49MjBcIl1cbiAgICBBQiAtLi0-IHxQcmlvciBMZWFybnwgQVtcIkEgPGJyLz4gbj0xMFwiXVxuICAgIEFCIC0uLT4gfFByaW9yIExlYXJufCBCW1wiQiA8YnIvPiBuPTEwXCJdXG4gICAgQUJDIC0uLT4gfFByaW9yIExlYXJufCBDW1wiQyA8YnIvPiBuPTEwXCJdXG4gIFxuICAgIHN1YmdyYXBoIFwiIFwiXG4gICAgQVxuICAgIEJcbiAgICBDXG4gICAgZW5kXG4iLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ)
+
+**Define Workflow**
+```sh
+#!/usr/bin/env nextflow
+# wf.nf
+
+workflow ABC {
+    main:
+      eset = "data/esets/ABC.rds"
+      modules = "data/modules.rds"
+      SPLIT( eset, modules )
+      LEARN( SPLIT.out.flatten() )
+      RECONSTRUCT( eset, LEARN.out[0].collect() )
+    emit:
+      LEARN.out[0]
+}
+workflow AB {
+    take: 
+      prior
+    main:
+      eset = "data/esets/AB.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+     emit:
+     LEARN_PRIOR.out[0]
+}
+workflow A {
+    take: 
+      prior
+    main:
+      eset = "data/esets/A.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+}
+workflow B {
+    take: 
+      prior
+    main:
+      eset = "data/esets/B.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+}
+workflow C {
+    take: 
+      prior
+    main:
+      eset = "data/esets/C.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+}
+workflow {
+    ABC()
+    AB(ABC.out)
+    A(AB.out)
+    B(AB.out)
+    C(ABC.out)
+}
+```
+
+**Run**  
+```bash
+$ nextflow run wf.nf -with-docker montilab/shine
+```
+
+```
+N E X T F L O W  ~  version 20.07.1
+Launching `wf.nf` [happy_koch] - revision: c2526aec9e
+executor >  local (36)
+[f4/c715fd] process > ABC:SPLIT          [100%] 1 of 1 ✔
+[1b/37cc11] process > ABC:LEARN (6)      [100%] 6 of 6 ✔
+[99/23dcba] process > ABC:RECONSTRUCT    [100%] 1 of 1 ✔
+[1b/4e3537] process > AB:LEARN_PRIOR (6) [100%] 6 of 6 ✔
+[2a/42f4df] process > AB:RECONSTRUCT     [100%] 1 of 1 ✔
+[da/17bb2f] process > A:LEARN_PRIOR (6)  [100%] 6 of 6 ✔
+[59/d209b2] process > A:RECONSTRUCT      [100%] 1 of 1 ✔
+[26/65e7a0] process > B:LEARN_PRIOR (6)  [100%] 6 of 6 ✔
+[7e/b65391] process > B:RECONSTRUCT      [100%] 1 of 1 ✔
+[58/721e46] process > C:LEARN_PRIOR (6)  [100%] 6 of 6 ✔
+[99/517354] process > C:RECONSTRUCT      [100%] 1 of 1 ✔
+Completed at: 21-Nov-2020 16:00:29
+Duration    : 2m 16s
 CPU hours   : 0.1
-Succeeded   : 5
+Succeeded   : 36
 ```
-
-### Network Visualization
-
-Check out https://github.com/montilab/netviz to explore your networks.

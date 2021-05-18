@@ -1,15 +1,16 @@
 ---
-title: "Structure Learning Constraints"
+title: "Structure Constraints"
 vignette: >
-  %\VignetteIndexEntry{Structure Learning Constraints}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Structure Constraints}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(comment="", cache=FALSE, fig.align="center")
 library(tidyr)
-library(dplyr)
 library(igraph)
 devtools::load_all(".")
 ```
@@ -27,83 +28,60 @@ As an example, we generate an undirected scale-free network using the Barab√°si‚
 ### Generate Scale-Free Graph
 
 ```{r}
-set.seed(123)
-g <- model.mpa(300, power=1.3)
+g <- readRDS(file.path(system.file("extdata", package="shine"), "models.rds"))
 model.plot(g)
 ```
 
 ### Simulate Multivariate Gaussian Data
 ```{r}
-set.seed(123)
-data <- model.sim(n=75, g)
+data <- model.sim(100, g, seed=1)
 bdg <- data$bdg
 eset <- data$eset
 ```
 
 # Constraint Methods
 
-We use a specific version of the [Weighted Gene Co-Expression Analysis](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559) method to identify gene modules where are clustered by the similarity (measured by biweight midcorrelation) and hierarchically clustered into gene modules of tightly co-expressed genes. Establishing gene modules captures coordinated co-expression of genes in a network that approximately follows a scale free topology, as do most biological networks, however direct gene-gene connections are abstracted away.
+We use a specific version of the [Weighted Gene Co-Expression Analysis](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559) method to identify gene modules where are clustered by their co-expression similarity and hierarchically clustered into gene modules of tightly co-expressed genes. However any method of identifying co-expression modules is applicable. Establishing gene modules captures coordinated co-expression of genes in a network that approximately follows a scale free topology.
 
 ```{r, results='hide', fig.keep='all'}
-wgcna <- mods.detect(eset, min.size=5, cores=3, do.plot=TRUE)
-```
-
-## Isolated Modules
-```{r}
-wgcna$mods$grey <- NULL
-str(wgcna$mods)
-```
-
-The Markov blanket for a node in a graphical model contains all the variables that shield the node from the rest of the network. This means that the Markov blanket of a node is the only knowledge needed to predict the behavior of that node and its children.
-
-In our case, for each gene, its markov blanket includes genes within its own module. These blankets makeup the constraint on the network, which vastly reduces the complexity of the search space. If the constraints prevent an edge between two genes, there will be a zero-entry in the matrix, otherwise the probability of an edge will be 0.5, assuming no other prior information is being incorporated.
-
-```{r}
-blanket <- blanket.new(wgcna$genes)
-blanket <- blanket.lift(blanket, wgcna$mods)
+wgcna <- mods.detect(eset, min.sft=0.85, beta=3, min.size=10, cores=1, do.plot=T)
+table(wgcna$colors)
 ```
 
 Here we relay the modules back on the true graphs structure...
+
 ```{r}
-V(g)$color <- wgcna$colors
+igraph::V(g)$color <- wgcna$colors
 model.plot(g, colors=TRUE)
 ```
 
-```{r}
-blanket.cred(blanket)
-```
+## Isolated Modules
 
-## Fuzzy Modules
-```{r fig.height=12, fig.width=12}
-mods.plot(wgcna$dat, wgcna$mods, wgcna$colors, size=2)
-```
+Now that we've identified co-expression modules, we could build networks for each module independently, assuming there is no cross-talk between module genes.
 
 ```{r}
-mod.plot(wgcna$dat, wgcna$mods, mod="green", wgcna$colors, size=2)
+wgcna$mods$grey <- NULL
+str(wgcna$mods)
+
+ig.iso <- g
+for (x in wgcna$mods) {
+    pairs <- combn(x, 2)
+    e <- igraph::edges(pairs)
+    ig.iso <- ig.iso + e
+}
+model.plot(ig.iso, colors=TRUE)
 ```
 
-```{r}
-fuzzy.plot(wgcna$dat, wgcna$mods, mod="green", size=2)
-```
+While this would greatly reduce the dimensionality of the problem, this will result in a disconnected global structure with no inter-module connections! This should only be used in the most extreme cases where the search complexity is too high.
 
-```{r}
-fuzzy <- fuzzy.mods(wgcna$dat, wgcna$mods)
+## Interacting Modules
 
-blanket <- blanket.new(wgcna$genes)
-blanket <- blanket.lift(blanket, fuzzy)
-blanket.cred(blanket)
-```
+Alternatively, we could limit interactions between modules by identifying modules likely to be interacting. In other words, we look for a meta network at the module level first. Using a meta network of co-regulated gene modules, we can represent each module as an eigengene, which is the first principle component (PC1) of the expression values of genes within a given module, resulting in a module x sample matrix. Within this lower-dimensional representation of the network, we establish conditional independence between modules by measuring the pairwise partial correlation.
 
-## Metanet
-
-Using a meta network of co-regulated gene modules, we can represent each module as an eigenvector, which is the first principle component (PC1) of the expression values of genes within a given module, resulting in a module x sample matrix. Within this lower-dimensional representation of the network, we establish conditional independence between modules by measuring the pairwise partial correlation.
-
-```{r}
+```{r, results='hide'}
 wgcna$mods$grey <- NULL    
 wgcna$eigengenes$grey <- NULL
-  
-# Estimate meta network
-metanet <- bdg.metanet(wgcna$eigengenes, mpl=TRUE, iter=25000, print=5000, cores=3)
+metanet <- bdg.metanet(wgcna$eigengenes, mpl=TRUE, cut=0.25, iter=25000, cores=3)
 ``` 
 
 ```{r}
@@ -111,8 +89,38 @@ V(metanet$ig)$color <- names(V(metanet$ig))
 plot(metanet$ig, vertex.size=10, edge.width=3, vertex.label=NA)
 ```
 
-```{r} 
-blanket <- blanket.new(wgcna$genes)
-blanket <- blanket.lift(blanket, wgcna$mods, metanet$edges)
-blanket.cred(blanket)
+Now we might enforce constraints where interactions are allowed within modules or between connected modules.
+
+## Extended Modules
+
+Alternatively to this all-or-nothing approach (when considering inter-module connections), we could determine secondary membership of individual nodes, which would result in inter-module interactions. We do this through the concept of fuzzy membership, where the membership of an individual node can be considered for each module.
+
+```{r}
+mod.plot(wgcna$dat, wgcna$mods, mod="black", wgcna$colors, size=3)
 ```
+
+Here we plot each node by its membership scores (MM1 & MM2) for the black module. Membership of a node in a given module is its correlation with the first and second eigengene (PC1 & PC2). Here we see the nodes with primary membership in the black module have high membership scores, as expected. Now assigning secondary membership to nodes not originally put in the black module is treated as a classification problem using QDA.
+
+```{r}
+fuzzy.plot(wgcna$dat, wgcna$mods, mod="black", p=0.9)
+```
+
+We extend the black module to its primary and now secondary members. And repeat the process for extending every module.
+
+```{r, fig.width=12, fig.height=8}
+mods.plot(wgcna$dat, wgcna$mods, wgcna$colors, ncol=5, size=2.5)
+```
+
+```{r}
+fuzzy <- fuzzy.mods(wgcna$dat, wgcna$mods, p=0.9)
+fuzzy$grey <- NULL
+mods <- sort(sapply(wgcna$mods, length), decreasing=TRUE)
+sapply(fuzzy, length)[names(mods)]
+sapply(fuzzy, length)[names(mods)]-mods
+```
+
+With our modules extending, we enforce constraints where interactions are allowed within these extended or fuzzy modules. Thus intra-module interactions and only the most likely inter-module interactions will be considered.
+
+## Extensions
+
+This idea can be extended to the many module detection algorithms released in recent years. Check out [A Comprehensive Evaluation of Module Detection Methods for Gene Expression data](https://www.nature.com/articles/s41467-018-03424-4) for an excellent review and comparison. Additionally you can check out these other [module detection wrappers scripts](https://github.com/anfederico/module-detection).

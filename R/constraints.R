@@ -48,6 +48,7 @@ sft.check <- function(sft) {
 #' @param powers A vector of values to test for soft thresholding
 #' @param merging Merge similar modules by eigengene
 #' @param merging.cut Maximum dissimilarity that qualifies modules for merging
+#' @param hclust.method Clustering method passed to hclust
 #' @param do.plot Use true to see plots
 #' 
 #' @return A list of data pertaining to resulting co-expression modules
@@ -68,6 +69,7 @@ mods.detect <- function(eset,
                         powers=c(seq(1, 10, by = 1), seq(12, 20, by = 2)),
                         merging=FALSE,
                         merging.cut=0.2,
+                        hclust.method="average",
                         do.plot=TRUE) {
     
     # Handle arguments
@@ -108,7 +110,7 @@ mods.detect <- function(eset,
     dis <- WGCNA::TOMdist(adjMat=adj, TOMType="unsigned")
     
     # Fast hierarchical clustering of dissimilarity
-    dendro <- flashClust::flashClust(d=as.dist(dis), method="average")
+    dendro <- flashClust::flashClust(d=as.dist(dis), method=hclust.method)
     
     # Module identification using dynamic tree cut algorithm
     modules <- dynamicTreeCut::cutreeDynamic(dendro=dendro,

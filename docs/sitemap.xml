@@ -25,9 +25,6 @@
     <loc>https://github.com/montilab/shine/reference/blanket.new.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/reference/build.workflow.html</loc>
-  </url>
-  <url>
     <loc>https://github.com/montilab/shine/reference/eig.exp.html</loc>
   </url>
   <url>
@@ -73,6 +70,9 @@
     <loc>https://github.com/montilab/shine/reference/model.kd.html</loc>
   </url>
   <url>
+    <loc>https://github.com/montilab/shine/reference/model.layout.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/montilab/shine/reference/model.mer.html</loc>
   </url>
   <url>
@@ -94,6 +94,9 @@
     <loc>https://github.com/montilab/shine/reference/model.similarity.html</loc>
   </url>
   <url>
+    <loc>https://github.com/montilab/shine/reference/model.simplify.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/montilab/shine/reference/model.sw.html</loc>
   </url>
   <url>
@@ -107,9 +110,6 @@
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/mods.plot.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/montilab/shine/reference/plt.hierarchy.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/reference/pvector.html</loc>
@@ -136,10 +136,7 @@
     <loc>https://github.com/montilab/shine/articles/docs/filtering.html</loc>
   </url>
   <url>
-    <loc>https://github.com/montilab/shine/articles/docs/hierarchy.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/montilab/shine/articles/docs/netviz.html</loc>
+    <loc>https://github.com/montilab/shine/articles/docs/learning.html</loc>
   </url>
   <url>
     <loc>https://github.com/montilab/shine/articles/docs/simulations.html</loc>

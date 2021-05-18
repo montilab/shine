@@ -354,7 +354,7 @@ model.kd <- function(ig) {
          xlab="k")
 }
 
-#' Simulate multivariate gaussian data for a model
+#' Simulate multivariate Gaussian data for a model
 #' 
 #' @param n The number of samples to generate data for
 #' @param ig An igraph object for the graph structure

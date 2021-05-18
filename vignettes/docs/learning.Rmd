@@ -1,0 +1,220 @@
+---
+title: "Network Learning"
+vignette: >
+  %\VignetteIndexEntry{Network learning}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(comment="", cache=FALSE)
+devtools::load_all(".")
+```
+
+# Simplified Example
+
+This is the last step in learning networks. At this point, you should have one or more datasets to learn networks for, employed a gene selection method, and learned structural constraints for your networks.
+
+```{r, eval=FALSE}
+library(shine)
+```
+
+```{r}
+data(toy)
+```
+
+```{r}
+dim(toy)
+```
+
+```{r, eval=FALSE}
+# Filter out non-varying genes
+genes.filtered <- keep.var(toy, column="subtype", subtypes=c("A", "B", "C"))
+
+# Select top genes by median absolute deviation
+genes.selected <- rank.var(toy, column="subtype", subtypes=c("A", "B", "C"), genes=genes.filtered, limit=150)
+
+# Subset toy dataset
+eset <- toy[genes.selected,]
+
+# Find constraints for structure with zero-order correlations
+wgcna <- mods.detect(eset, min.size=5, cores=3, do.plot=FALSE)
+fuzzy <- fuzzy.mods(wgcna$dat, wgcna$mods, p=0.9)
+fuzzy$grey <- NULL
+
+# Set constraints
+blanket <- blanket.new(wgcna$genes)
+blanket <- blanket.lift(blanket, mods=fuzzy)
+
+# Learn network
+bdg <- bdg.estimate(data=t(Biobase::exprs(eset)), 
+                    mpl=TRUE,
+                    g.prior=blanket, 
+                    method="ggm", 
+                    iter=5000, 
+                    print=100, 
+                    cores=3)
+```
+
+# Network Workflows
+
+Due to the heavy computational requirements for high-dimensional graphical modeling, we learn network hierarchies in parallel on high performance computing platforms. Because some networks are dependent on others (e.g. A network is used as a prior in learning another) we need a reactive workflow to handle all of the processes.
+
+We have create a separate resources for learning networks called [shine-nf](https://github.com/montilab/shine-nf). This is a collection of Nextflow modules (DSL2) for modeling hierarchical biological regulatory networks. It wraps methods developed in the shine R package in Nextflow modules for building hierarchical workflows.
+
+**Nextflow**  
+Workflows are built using [Nextflow](https://www.nextflow.io/). Nextflow can be used on any POSIX compatible system (Linux, OS X, etc) and requires BASH and Java 8 (or higher) to be installed. Download the latest version of Nextflow compatible with DSL2:
+
+```bash
+$ curl -s https://get.nextflow.io | bash
+```
+
+--
+*Hint*
+Once downloaded make the `nextflow` file accessible by your $PATH variable so you do not have to specify the full path to nextflow each time. e.g. `nextflow run` rather than `path/to/nextflow run`
+--
+
+**Clone Directory**  
+```bash
+$ git clone https://github.com/montilab/shine-nf
+```
+
+**Docker**  
+```bash
+$ docker pull montilab/shine:latest
+```
+
+## Example Hierarchy
+
+```{r}
+dim(toy)
+table(toy$subtype)
+```
+
+```
+    ABC
+    / \
+   AB  \ 
+  /  \  \
+ A    B  C 
+```
+
+### Individual / No Constraints
+
+This most simple workflow includes building networks for groups A, B, and C without any prior information.
+
+```sh
+workflow A {
+    main:
+      eset = "data/esets/A.rds"
+      LEARN( eset )
+}
+workflow B {
+    main:
+      eset = "data/esets/B.rds"
+      LEARN( eset, prior )
+}
+workflow C {
+    main:
+      eset = "data/esets/C.rds"
+      LEARN( eset, prior )
+}
+workflow {
+    A()
+    B()
+    C()
+}
+```
+
+### Individual / Constraints
+
+This most simple workflow includes building networks for groups A, B, and C without any prior information.
+
+```sh
+workflow A {
+    main:
+      eset = "data/esets/A.rds"
+      modules = "data/modules.rds"
+      SPLIT( eset, modules )
+      LEARN( SPLIT.out.flatten() )
+      RECONSTRUCT( eset, LEARN.out[0].collect() )
+}
+workflow B {
+    main:
+      eset = "data/esets/B.rds"
+      modules = "data/modules.rds"
+      SPLIT( eset, modules )
+      LEARN( SPLIT.out.flatten() )
+      RECONSTRUCT( eset, LEARN.out[0].collect() )
+}
+workflow C {
+    main:
+      eset = "data/esets/C.rds"
+      modules = "data/modules.rds"
+      SPLIT( eset, modules )
+      LEARN( SPLIT.out.flatten() )
+      RECONSTRUCT( eset, LEARN.out[0].collect() )
+}
+workflow {
+    A()
+    B()
+    C()
+}
+```
+
+### Hierarchy / Constraints
+```sh
+workflow ABC {
+    main:
+      eset = "data/esets/ABC.rds"
+      modules = "data/modules.rds"
+      SPLIT( eset, modules )
+      LEARN( SPLIT.out.flatten() )
+      RECONSTRUCT( eset, LEARN.out[0].collect() )
+    emit:
+      LEARN.out[0]
+}
+workflow AB {
+    take: 
+      prior
+    main:
+      eset = "data/esets/AB.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+     emit:
+     LEARN_PRIOR.out[0]
+}
+workflow A {
+    take: 
+      prior
+    main:
+      eset = "data/esets/A.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+}
+workflow B {
+    take: 
+      prior
+    main:
+      eset = "data/esets/B.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+}
+workflow C {
+    take: 
+      prior
+    main:
+      eset = "data/esets/C.rds"
+      LEARN_PRIOR( eset, prior )
+      RECONSTRUCT( eset, LEARN_PRIOR.out[0].collect() )
+}
+workflow {
+    ABC()
+    AB(ABC.out)
+    A(AB.out)
+    B(AB.out)
+    C(ABC.out)
+}
+```
+
+Refer to [shine-nf](https://github.com/montilab/shine-nf) for detailed documentation.
